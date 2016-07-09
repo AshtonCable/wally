@@ -14,22 +14,7 @@
  * limitations under the License.
  */
 
-buildscript {
-    repositories {
-        maven { url 'http://download.crashlytics.com/maven' }
-    }
-
-    dependencies {
-        classpath 'com.crashlytics.tools.gradle:crashlytics-gradle:1.+'
-    }
-}
 apply plugin: 'com.android.application'
-apply plugin: 'crashlytics'
-
-repositories {
-    maven { url 'http://download.crashlytics.com/maven' }
-}
-
 
 android {
     lintOptions{
@@ -50,13 +35,13 @@ android {
         exclude 'META-INF/dependencies.txt'
         exclude 'META-INF/LGPL2.1'
     }
-    compileSdkVersion 21
-    buildToolsVersion '21.1.2'
+    compileSdkVersion 24
+    buildToolsVersion '24.0.0'
     def Properties versionProps = new Properties()
     versionProps.load(new FileInputStream(file('version.properties')))
     defaultConfig {
         minSdkVersion 15
-        targetSdkVersion 21
+        targetSdkVersion 24
         versionName versionProps['name']
         versionCode versionProps['code'].toInteger()
     }
@@ -64,30 +49,10 @@ android {
     Look at Roman Nurik's build.gradle. Lots of good stuff there regarding builds:
     https://github.com/romannurik/muzei/blob/master/main/build.gradle
      */
-    signingConfigs {
-        release {
-            def Properties localProps = new Properties()
-            localProps.load(new FileInputStream(file('../../local.properties')))
-            def Properties keyProps = new Properties()
-            assert localProps['keystore.props.file'];
-            keyProps.load(new FileInputStream(file(localProps['keystore.props.file'])))
-            storeFile file(keyProps["store"])
-            keyAlias keyProps["alias"]
-            storePassword keyProps["storePass"]
-            keyPassword keyProps["pass"]
-        }
-        debug {
-            keyAlias 'musenkishi'
-            keyPassword 'wallydebug'
-            storeFile file('../wally_debug_keystore.jks')
-            storePassword 'wallydebug'
-        }
-    }
     buildTypes {
         release {
             minifyEnabled true
             proguardFiles 'proguard-project.txt'
-            signingConfig signingConfigs.release
         }
         publicBeta.initWith(buildTypes.release)
         publicBeta {
@@ -108,7 +73,6 @@ android {
             minifyEnabled false
             proguardFiles 'proguard-project.txt'
             versionNameSuffix ' Debug'
-            signingConfig signingConfigs.debug
         }
     }
     productFlavors {
@@ -129,7 +93,6 @@ dependencies {
     }
     compile fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
     compile project(':dataprovider')
-    compile 'com.crashlytics.android:crashlytics:1.1.13'
     compile 'com.google.android.apps.muzei:muzei-api:1.0'
     compile 'com.wrapp.floatlabelededittext:library:0.0.3'
     compile 'com.github.Musenkishi:PaletteLoader:1.1.0'

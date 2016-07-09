@@ -16,6 +16,7 @@
 
 package com.musenkishi.wally.base;
 
+import android.Manifest;
 import android.animation.Animator;
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
@@ -27,6 +28,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -37,10 +39,12 @@ import android.graphics.drawable.Drawable;
 import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Spannable;
 import android.text.SpannableString;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -98,6 +102,8 @@ public abstract class BaseActivity extends ActionBarActivity {
         if (BuildConfig.DEBUG && isDevicePluggedIn()) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }
+
+        isStoragePermissionGranted();
     }
 
     private boolean isDevicePluggedIn() {
@@ -105,6 +111,24 @@ public abstract class BaseActivity extends ActionBarActivity {
         assert intent != null;
         int plugged = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1);
         return plugged == BatteryManager.BATTERY_PLUGGED_USB;
+    }
+
+    public boolean isStoragePermissionGranted() {
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    == PackageManager.PERMISSION_GRANTED) {
+                Log.v("BaseActivity", "Permission is granted");
+                return true;
+            } else {
+
+                Log.v("BaseActivity", "Storage Permission is revoked");
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+                return false;
+            }
+        } else { //permission is automatically granted on sdk<23 upon installation
+            Log.v("BaseActivity", "Permission is granted");
+            return true;
+        }
     }
 
     @Override
@@ -120,7 +144,7 @@ public abstract class BaseActivity extends ActionBarActivity {
     }
 
     private void showCrashLoggingPermissionDialog() {
-
+        /*
         final MaterialDialogFragment permissionDialogFragment = new MaterialDialogFragment();
         permissionDialogFragment.setPrimaryColor(getResources().getColor(R.color.Actionbar_TopList_Background));
         permissionDialogFragment.setTitle(R.string.dialog_crashlogging_title);
@@ -136,10 +160,11 @@ public abstract class BaseActivity extends ActionBarActivity {
         });
         permissionDialogFragment.setNegativeButton(R.string.dialog_crashlogging_negative, new DialogInterface.OnClickListener() {
             @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
+            public void onClick(DialogInterface dialogInterface, int i) {*/
                 WallyApplication.getDataProviderInstance()
                         .getSharedPreferencesDataProviderInstance()
                         .setUserApprovedCrashLogging(SharedPreferencesDataProvider.CRASH_LOGGING_NOT_APPROVED);
+                /*
                 permissionDialogFragment.dismiss();
             }
         });
@@ -156,6 +181,7 @@ public abstract class BaseActivity extends ActionBarActivity {
             }
         });
         permissionDialogFragment.show(getSupportFragmentManager(), MaterialDialogFragment.TAG);
+        */
     }
 
     public void setToolbar(Toolbar toolbar) {
