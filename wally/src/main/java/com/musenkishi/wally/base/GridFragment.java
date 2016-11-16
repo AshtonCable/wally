@@ -20,6 +20,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.SimpleItemAnimator;
 import android.text.method.LinkMovementMethod;
 import android.view.View;
 import android.view.ViewGroup;
@@ -59,7 +60,10 @@ public abstract class GridFragment extends BaseFragment {
 
         gridLayoutManager = new GridLayoutManager(rootView.getContext(), 2);
         gridView.setLayoutManager(gridLayoutManager);
-        gridView.getItemAnimator().setSupportsChangeAnimations(true);
+
+        if (gridView.getItemAnimator() instanceof SimpleItemAnimator) {
+            ((SimpleItemAnimator) gridView.getItemAnimator()).setSupportsChangeAnimations(true);
+        }
 
         progressBar = rootView.findViewById(R.id.loader);
         if (progressBar != null) {
