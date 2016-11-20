@@ -44,6 +44,7 @@ import com.musenkishi.wally.R;
 import com.musenkishi.wally.activities.ImageDetailsActivity;
 import com.musenkishi.wally.activities.MainActivity;
 import com.musenkishi.wally.adapters.RecyclerImagesAdapter;
+import com.musenkishi.wally.base.BaseActivity;
 import com.musenkishi.wally.base.GridFragment;
 import com.musenkishi.wally.base.WallyApplication;
 import com.musenkishi.wally.dataprovider.DataProvider;
@@ -65,7 +66,7 @@ import static com.musenkishi.wally.observers.FiltersChangeReceiver.OnFiltersChan
 
 /**
  * ToplistFragment is responsible for showing the user the toplist of wallpapers.
- *
+ * <p>
  * Created by Freddie (Musenkishi) Lust-Hed on 2014-02-28
  */
 public class LatestFragment extends GridFragment implements RecyclerImagesAdapter.OnSaveButtonClickedListener, Handler.Callback, OnFileChangeListener, OnFiltersChangeListener {
@@ -118,7 +119,7 @@ public class LatestFragment extends GridFragment implements RecyclerImagesAdapte
         if (rootView != null) {
             super.onCreateView(rootView);
             setupAutoSizeGridView();
-            if (savedInstanceState != null && savedInstanceState.containsKey(STATE_IMAGES)){
+            if (savedInstanceState != null && savedInstanceState.containsKey(STATE_IMAGES)) {
                 Message msgObj = uiHandler.obtainMessage();
                 msgObj.what = MSG_IMAGES_REQUEST_CREATE;
                 msgObj.arg1 = 1;
@@ -296,12 +297,18 @@ public class LatestFragment extends GridFragment implements RecyclerImagesAdapte
             case MSG_PAGE_RECEIVED:
                 ImagePage imagePage = (ImagePage) msg.obj;
                 if (imagePage != null) {
+
+                    if (!((BaseActivity) getActivity()).isStoragePermissionGranted()) {
+                        Toast.makeText(getActivity(), getString(R.string.storagePermissionError), Toast.LENGTH_LONG).show();
+                        break;
+                    }
+
                     SaveImageRequest saveImageRequest = WallyApplication.getDataProviderInstance().downloadImageIfNeeded(
                             imagePage.imagePath(),
                             imagePage.imageId(),
                             getResources().getString(R.string.notification_title_image_saving));
 
-                    if (saveImageRequest.getDownloadID() != null && getActivity() instanceof MainActivity){
+                    if (saveImageRequest.getDownloadID() != null && getActivity() instanceof MainActivity) {
                         WallyApplication.getDownloadIDs().put(saveImageRequest.getDownloadID(), imagePage.imageId());
                     } else {
                         getActivity().sendBroadcast(new Intent(FileReceiver.GET_FILES));

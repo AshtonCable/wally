@@ -576,6 +576,11 @@ public class SearchFragment extends GridFragment implements
             case MSG_PAGE_RECEIVED:
                 ImagePage imagePage = (ImagePage) msg.obj;
                 if (imagePage != null) {
+                    if (!((BaseActivity) getActivity()).isStoragePermissionGranted()) {
+                        Toast.makeText(getActivity(), getString(R.string.storagePermissionError), Toast.LENGTH_LONG).show();
+                        break;
+                    }
+
                     SaveImageRequest saveImageRequest = WallyApplication.getDataProviderInstance().downloadImageIfNeeded(
                             imagePage.imagePath(),
                             imagePage.imageId(),

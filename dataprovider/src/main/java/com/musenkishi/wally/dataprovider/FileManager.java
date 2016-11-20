@@ -39,6 +39,10 @@ public class FileManager {
         myDir.mkdirs();
         File[] listOfFiles = myDir.listFiles();
 
+        if(listOfFiles == null) {
+            return false;
+        }
+
         for (File file : listOfFiles)
         {
             if (file.isFile())

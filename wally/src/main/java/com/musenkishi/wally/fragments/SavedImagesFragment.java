@@ -20,9 +20,11 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -51,7 +53,7 @@ import de.psdev.licensesdialog.LicensesDialogFragment;
 
 /**
  * SavedImagesFragment is responsible to show the user all the wallpapers that has been saved.
- *
+ * <p>
  * Created by Musenkishi on 2014-05-11.
  */
 public class SavedImagesFragment extends GridFragment implements Handler.Callback, ActionMode.Callback {
@@ -138,7 +140,7 @@ public class SavedImagesFragment extends GridFragment implements Handler.Callbac
             });
         }
 
-        if (!BuildConfig.BUILD_TYPE.equalsIgnoreCase("release")){
+        if (!BuildConfig.BUILD_TYPE.equalsIgnoreCase("release")) {
             menu.add("Wally " + BuildConfig.VERSION_NAME);
         }
 
@@ -209,9 +211,15 @@ public class SavedImagesFragment extends GridFragment implements Handler.Callbac
 
     @Override
     protected void getImages(int index, String query) {
-        if (!uiHandler.hasMessages(GET_IMAGES_FROM_STORAGE)) {
+        if (hasStoragePermission() && !uiHandler.hasMessages(GET_IMAGES_FROM_STORAGE)) {
             uiHandler.sendEmptyMessage(GET_IMAGES_FROM_STORAGE);
         }
+    }
+
+    private boolean hasStoragePermission() {
+        return Build.VERSION.SDK_INT < 23
+                || (getActivity().checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_GRANTED);
     }
 
     @Override
@@ -234,7 +242,7 @@ public class SavedImagesFragment extends GridFragment implements Handler.Callbac
                             mImageUri,
                             projection,
                             MediaStore.Images.Media.DATA + " like ? ",
-                            new String[] {"%/Wally/%"},
+                            new String[]{"%/Wally/%"},
                             MediaStore.Audio.Media.DATE_ADDED + " DESC");
 
                     initObserver(cursor);
