@@ -50,13 +50,13 @@ android {
         exclude 'META-INF/dependencies.txt'
         exclude 'META-INF/LGPL2.1'
     }
-    compileSdkVersion 21
-    buildToolsVersion '21.1.2'
+    compileSdkVersion 25
+    buildToolsVersion '25.0.0'
     def Properties versionProps = new Properties()
     versionProps.load(new FileInputStream(file('version.properties')))
     defaultConfig {
         minSdkVersion 15
-        targetSdkVersion 21
+        targetSdkVersion 25
         versionName versionProps['name']
         versionCode versionProps['code'].toInteger()
     }
@@ -67,7 +67,7 @@ android {
     signingConfigs {
         release {
             def Properties localProps = new Properties()
-            localProps.load(new FileInputStream(file('../../local.properties')))
+            localProps.load(new FileInputStream(file('../local.properties')))
             def Properties keyProps = new Properties()
             assert localProps['keystore.props.file'];
             keyProps.load(new FileInputStream(file(localProps['keystore.props.file'])))
@@ -77,10 +77,10 @@ android {
             keyPassword keyProps["pass"]
         }
         debug {
-            keyAlias 'musenkishi'
-            keyPassword 'wallydebug'
+            keyAlias 'key1'
+            keyPassword 'wally_pass'
             storeFile file('../wally_debug_keystore.jks')
-            storePassword 'wallydebug'
+            storePassword 'wally_pass'
         }
     }
     buildTypes {
@@ -116,7 +116,7 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:support-annotations:21.0.0'
+    compile 'com.android.support:support-annotations:25.3.0'
     compile 'org.apache.commons:commons-collections4:4.0'
     compile 'com.android.support:support-v4:22.1.1'
     compile 'com.android.support:palette-v7:21.0.0'

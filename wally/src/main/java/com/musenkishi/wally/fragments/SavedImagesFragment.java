@@ -131,7 +131,9 @@ public class SavedImagesFragment extends GridFragment implements Handler.Callbac
             menuItemFilter.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                 @Override
                 public boolean onMenuItemClick(MenuItem item) {
-                    final LicensesDialogFragment fragment = LicensesDialogFragment.newInstance(R.raw.notices, false);
+                    LicensesDialogFragment.Builder LDFBuilder = new LicensesDialogFragment.Builder(getContext());
+                    final LicensesDialogFragment fragment = LDFBuilder.setNotices(R.raw.notices).build();
+//                    final LicensesDialogFragment fragment = LicensesDialogFragment.newInstance(R.raw.notices, false);
                     fragment.show(getFragmentManager(), null);
                     return false;
                 }
