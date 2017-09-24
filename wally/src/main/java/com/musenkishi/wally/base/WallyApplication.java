@@ -19,10 +19,10 @@ package com.musenkishi.wally.base;
 import android.app.Application;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.util.Log;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.model.GlideUrl;
-import com.crashlytics.android.Crashlytics;
 import com.musenkishi.wally.BuildConfig;
 import com.musenkishi.wally.dataprovider.DataProvider;
 import com.musenkishi.wally.dataprovider.SharedPreferencesDataProvider;
@@ -129,9 +129,6 @@ public class WallyApplication extends Application {
     }
 
     public static void startCrashlytics(Context context) {
-        if (!BuildConfig.DEBUG){
-            Crashlytics.start(context);
-        }
     }
 
     public static DataProvider getDataProviderInstance(){
@@ -145,7 +142,7 @@ public class WallyApplication extends Application {
                             SharedPreferencesDataProvider.CRASH_LOGGING_APPROVED) {
                         String message = "Class: " + fromClass.getName() + ", reason: " + reason +
                                 ", exceptionMessage: " + exceptionMessage;
-                        Crashlytics.log(message);
+                        Log.w(WallyApplication.class.getSimpleName(), message);
                     }
                 }
             });

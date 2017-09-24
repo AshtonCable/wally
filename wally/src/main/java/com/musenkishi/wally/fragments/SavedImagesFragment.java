@@ -20,9 +20,11 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -214,6 +216,12 @@ public class SavedImagesFragment extends GridFragment implements Handler.Callbac
         if (!uiHandler.hasMessages(GET_IMAGES_FROM_STORAGE)) {
             uiHandler.sendEmptyMessage(GET_IMAGES_FROM_STORAGE);
         }
+    }
+
+    private boolean hasStoragePermission() {
+        return Build.VERSION.SDK_INT < 23
+                || (getActivity().checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_GRANTED);
     }
 
     @Override

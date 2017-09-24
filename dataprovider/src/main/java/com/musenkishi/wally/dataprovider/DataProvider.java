@@ -20,6 +20,7 @@ import android.app.DownloadManager;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Environment;
+import android.support.v4.content.FileProvider;
 
 import com.musenkishi.wally.dataprovider.models.DataProviderError;
 import com.musenkishi.wally.dataprovider.models.SaveImageRequest;
@@ -43,6 +44,7 @@ import static com.musenkishi.wally.dataprovider.NetworkDataProvider.OnDataReceiv
 public class DataProvider {
 
     private static final String TAG = "DataProvider";
+    private final Context context;
     private SharedPreferencesDataProvider sharedPreferencesDataProvider;
     private DownloadManager downloadManager;
     private Parser parser;
@@ -63,9 +65,10 @@ public class DataProvider {
         sharedPreferencesDataProvider = new SharedPreferencesDataProvider(context);
         parser = new Parser(onReportListener);
         downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
+        this.context = context;
     }
 
-    public SharedPreferencesDataProvider getSharedPreferencesDataProviderInstance(){
+    public SharedPreferencesDataProvider getSharedPreferencesDataProviderInstance() {
         return sharedPreferencesDataProvider;
     }
 
@@ -92,7 +95,7 @@ public class DataProvider {
         });
     }
 
-    public ArrayList<Image> getImagesSync(String path, int index, FilterGroupsStructure filterGroupsStructure){
+    public ArrayList<Image> getImagesSync(String path, int index, FilterGroupsStructure filterGroupsStructure) {
         String data = new NetworkDataProvider().getDataSync(path, index, filterGroupsStructure);
         if (data != null) {
             return parser.parseImages(data);
@@ -110,7 +113,7 @@ public class DataProvider {
             public void onData(String data, String url) {
                 ArrayList<Image> images = parser.parseImages(data);
                 if (onImagesReceivedListener != null) {
-                    if (!images.isEmpty()){
+                    if (!images.isEmpty()) {
                         onImagesReceivedListener.onImagesReceived(images);
                     } else {
                         DataProviderError noImagesError = new DataProviderError(DataProviderError.Type.LOCAL, 204, "No images");
@@ -128,7 +131,7 @@ public class DataProvider {
         });
     }
 
-    public ImagePage getPageDataSync(String imagePageUrl){
+    public ImagePage getPageDataSync(String imagePageUrl) {
         String data = new NetworkDataProvider().getDataSync(imagePageUrl);
         return parser.parseImagePage(data, imagePageUrl);
     }
@@ -153,15 +156,15 @@ public class DataProvider {
         });
     }
 
-    public void setTimeSpan(String tag, Filter<String, String> timespan){
+    public void setTimeSpan(String tag, Filter<String, String> timespan) {
         sharedPreferencesDataProvider.setTimespan(tag, timespan);
     }
 
-    public Filter<String, String> getTimespan(String tag){
+    public Filter<String, String> getTimespan(String tag) {
         return sharedPreferencesDataProvider.getTimespan(tag);
     }
 
-    public void setBoards(String tag, String paramValue){
+    public void setBoards(String tag, String paramValue) {
         sharedPreferencesDataProvider.setBoards(tag, paramValue);
     }
 
@@ -169,7 +172,7 @@ public class DataProvider {
         return sharedPreferencesDataProvider.getBoards(tag);
     }
 
-    public void setPurity(String tag, String paramValue){
+    public void setPurity(String tag, String paramValue) {
         sharedPreferencesDataProvider.setPurity(tag, paramValue);
     }
 
@@ -177,7 +180,7 @@ public class DataProvider {
         return sharedPreferencesDataProvider.getPurity(tag);
     }
 
-    public void setAspectRatio(String tag, Filter<String, String> aspectRatio){
+    public void setAspectRatio(String tag, Filter<String, String> aspectRatio) {
         sharedPreferencesDataProvider.setAspectRatio(tag, aspectRatio);
     }
 
@@ -185,7 +188,7 @@ public class DataProvider {
         return sharedPreferencesDataProvider.getAspectRatio(tag);
     }
 
-    public void setResolutionOption(String tag, String paramValue){
+    public void setResolutionOption(String tag, String paramValue) {
         sharedPreferencesDataProvider.setResolutionOption(tag, paramValue);
     }
 
@@ -193,7 +196,7 @@ public class DataProvider {
         return sharedPreferencesDataProvider.getResolutionOption(tag);
     }
 
-    public void setResolution(String tag, Filter<String, String> resolution){
+    public void setResolution(String tag, Filter<String, String> resolution) {
         sharedPreferencesDataProvider.setResolution(tag, resolution);
     }
 
@@ -201,12 +204,12 @@ public class DataProvider {
         return sharedPreferencesDataProvider.getResolution(tag);
     }
 
-    public SaveImageRequest downloadImageIfNeeded(Uri path, String filename, String notificationTitle){
+    public SaveImageRequest downloadImageIfNeeded(Uri path, String filename, String notificationTitle) {
         FileManager fileManager = new FileManager();
 
-        if (fileManager.fileExists(filename)){
+        if (fileManager.fileExists(filename)) {
             File file = fileManager.getFile(filename);
-            Uri fileUri = Uri.fromFile(file);
+            Uri fileUri = FileProvider.getUriForFile(context, context.getApplicationContext().getPackageName() + ".provider", file);
             return new SaveImageRequest(fileUri);
         } else {
 
@@ -230,8 +233,7 @@ public class DataProvider {
         FileManager fileManager = new FileManager();
         if (fileManager.fileExists(filename)) {
             File file = fileManager.getFile(filename);
-            Uri fileUri = Uri.fromFile(file);
-            return fileUri;
+            return FileProvider.getUriForFile(context, context.getApplicationContext().getPackageName() + ".provider", file);
         }
         return null;
     }

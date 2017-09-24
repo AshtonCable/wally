@@ -89,5 +89,6 @@
     <string name="you_must_have_at_least_one_category_checked">You must have at least one category checked</string>
     <string name="you_must_have_at_least_one_rating_checked">You must have at least one rating checked</string>
     <string name="transition_image_details">transition_detail_image</string>
+    <string name="storagePermissionError">Error: File permission required</string>
 
 </resources>

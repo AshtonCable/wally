@@ -653,6 +653,12 @@ public class ImageDetailsActivity extends BaseActivity implements Handler.Callba
 
     private void saveToFile(final int handlerCode) {
         currentHandlerCode = handlerCode;
+
+        if (!isStoragePermissionGranted()) {
+            Toast.makeText(this, getString(R.string.storagePermissionError), Toast.LENGTH_LONG).show();
+            return;
+        }
+
         SaveImageRequest saveImageRequest = WallyApplication
                 .getDataProviderInstance()
                 .downloadImageIfNeeded(

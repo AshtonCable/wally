@@ -45,6 +45,7 @@ import com.musenkishi.wally.R;
 import com.musenkishi.wally.activities.ImageDetailsActivity;
 import com.musenkishi.wally.activities.MainActivity;
 import com.musenkishi.wally.adapters.RecyclerImagesAdapter;
+import com.musenkishi.wally.base.BaseActivity;
 import com.musenkishi.wally.base.GridFragment;
 import com.musenkishi.wally.base.WallyApplication;
 import com.musenkishi.wally.dataprovider.DataProvider;
@@ -297,6 +298,11 @@ public class ToplistFragment extends GridFragment implements RecyclerImagesAdapt
             case MSG_PAGE_RECEIVED:
                 ImagePage imagePage = (ImagePage) msg.obj;
                 if (imagePage != null) {
+                    if (!((BaseActivity) getActivity()).isStoragePermissionGranted()) {
+                        Toast.makeText(getActivity(), getString(R.string.storagePermissionError), Toast.LENGTH_LONG).show();
+                        break;
+                    }
+
                     SaveImageRequest saveImageRequest = WallyApplication.getDataProviderInstance().downloadImageIfNeeded(
                             imagePage.imagePath(),
                             imagePage.imageId(),

@@ -34,3 +34,15 @@
     **[] $VALUES;
     public *;
 }
+
+-dontwarn uk.co.senab.photoview.**
+-keep class uk.co.senab.photoview.** { *;}
+-dontwarn android.support.v4.**
+
+-keep public class android.support.v7.widget.** { *; }
+-keep public class android.support.v7.internal.widget.** { *; }
+-keep public class android.support.v7.internal.view.menu.** { *; }
+
+-keep public class * extends android.support.v4.view.ActionProvider {
+    public <init>(android.content.Context);
+}

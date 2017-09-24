@@ -19,6 +19,7 @@ package com.musenkishi.wally.anim;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPropertyAnimatorListener;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SimpleItemAnimator;
 import android.view.View;
 
 import java.util.ArrayList;
@@ -30,14 +31,14 @@ import java.util.ArrayList;
  *
  * @see android.support.v7.widget.RecyclerView#setItemAnimator(android.support.v7.widget.RecyclerView.ItemAnimator)
  */
-public abstract class BaseItemAnimator extends RecyclerView.ItemAnimator {
+public abstract class BaseItemAnimator extends SimpleItemAnimator {
 
     /**
      * RecyclerView
      */
     protected RecyclerView mRecyclerView;
 
-    public BaseItemAnimator(RecyclerView recyclerView){
+    public BaseItemAnimator(RecyclerView recyclerView) {
         mRecyclerView = recyclerView;
     }
 
@@ -186,6 +187,7 @@ public abstract class BaseItemAnimator extends RecyclerView.ItemAnimator {
                     ViewCompat.setTranslationY(view, 0);
                 }
             }
+
             @Override
             public void onAnimationEnd(View view) {
                 dispatchMoveFinished(holder);
@@ -318,12 +320,17 @@ public abstract class BaseItemAnimator extends RecyclerView.ItemAnimator {
 
     protected static class VpaListenerAdapter implements ViewPropertyAnimatorListener {
         @Override
-        public void onAnimationStart(View view) {}
+        public void onAnimationStart(View view) {
+        }
 
         @Override
-        public void onAnimationEnd(View view) {}
+        public void onAnimationEnd(View view) {
+        }
 
         @Override
-        public void onAnimationCancel(View view) {}
-    };
+        public void onAnimationCancel(View view) {
+        }
+    }
+
+    ;
 }
