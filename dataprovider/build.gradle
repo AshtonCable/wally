@@ -41,5 +41,5 @@ dependencies {
     compile 'org.jsoup:jsoup:1.8.1'
     compile 'commons-io:commons-io:2.4'
     compile project(':models')
-    compile 'com.android.support:support-core-utils:25.0.1'
+    compile 'com.android.support:support-core-utils:25.3.0'
 }
