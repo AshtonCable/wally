@@ -53,7 +53,7 @@ import de.psdev.licensesdialog.LicensesDialogFragment;
 
 /**
  * SavedImagesFragment is responsible to show the user all the wallpapers that has been saved.
- *
+ * <p>
  * Created by Musenkishi on 2014-05-11.
  */
 public class SavedImagesFragment extends GridFragment implements Handler.Callback, ActionMode.Callback {
@@ -349,9 +349,8 @@ public class SavedImagesFragment extends GridFragment implements Handler.Callbac
     private void toggleActionMode() {
         if (recyclerSavedImagesAdapter.getSelectedItemCount() > 0) {
             if (actionMode == null) {
-                actionMode = ((MainActivity) getActivity()).getSupportActionBar().startActionMode(this);
+                actionMode = ((MainActivity) getActivity()).startSupportActionMode(this);
             }
-            actionMode.setTitle(recyclerSavedImagesAdapter.getSelectedItemCount() + " checked");
         } else {
             if (actionMode != null) {
                 actionMode.finish();
@@ -368,6 +367,7 @@ public class SavedImagesFragment extends GridFragment implements Handler.Callbac
 
     @Override
     public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+        mode.setTitle(recyclerSavedImagesAdapter.getSelectedItemCount() + " checked");
         return false;
     }
 
