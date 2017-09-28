@@ -27,6 +27,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.FileProvider;
 import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,6 +44,8 @@ import com.bumptech.glide.request.target.Target;
 import com.musenkishi.wally.R;
 import com.musenkishi.wally.anim.interpolator.LinearOutSlowInInterpolator;
 import com.musenkishi.wally.observers.FileReceiver;
+
+import java.io.File;
 
 import uk.co.senab.photoview.PhotoView;
 import uk.co.senab.photoview.PhotoViewAttacher;
@@ -425,7 +428,12 @@ public class ImageZoomFragment extends DialogFragment {
 
         MimeTypeMap map = MimeTypeMap.getSingleton();
         String mimeType = map.getMimeTypeFromExtension("png");
-        intent.setDataAndType(fileUri, mimeType);
+        File file = new File(fileUri.getPath());
+        Uri uriForFile = FileProvider.getUriForFile(
+                getContext(),
+                getContext().getApplicationContext()
+                        .getPackageName() + ".provider", file);
+        intent.setDataAndType(uriForFile, mimeType);
         intent.putExtra("mimeType", mimeType);
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
