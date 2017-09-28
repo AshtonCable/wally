@@ -161,7 +161,7 @@ public abstract class BaseActivity extends ActionBarActivity {
         permissionDialogFragment.setNegativeButton(R.string.dialog_crashlogging_negative, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {*/
-                WallyApplication.getDataProviderInstance()
+                WallyApplication.getFilterProvider()
                         .getSharedPreferencesDataProviderInstance()
                         .setUserApprovedCrashLogging(SharedPreferencesDataProvider.CRASH_LOGGING_NOT_APPROVED);
                 /*

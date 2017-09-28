@@ -170,7 +170,7 @@ public class FilterDialogFragment extends MaterialDialogFragment {
     }
 
     private void setupBoardCheckBoxes() {
-        FilterBoards filterBoards = new FilterBoards(WallyApplication.getDataProviderInstance().getBoards(FilterBoardsKeys.PARAMETER_KEY));
+        FilterBoards filterBoards = new FilterBoards(WallyApplication.getFilterProvider().getBoards(FilterBoardsKeys.PARAMETER_KEY));
         checkBoxBoardGeneral.setChecked(filterBoards.isGeneralChecked());
         checkBoxBoardAnime.setChecked(filterBoards.isAnimeChecked());
         checkBoxBoardPeople.setChecked(filterBoards.isPeopleChecked());
@@ -180,7 +180,7 @@ public class FilterDialogFragment extends MaterialDialogFragment {
     }
 
     private void setupPurityCheckBoxes() {
-        FilterPurity filterPurity = new FilterPurity(WallyApplication.getDataProviderInstance().getPurity(FilterPurityKeys.PARAMETER_KEY));
+        FilterPurity filterPurity = new FilterPurity(WallyApplication.getFilterProvider().getPurity(FilterPurityKeys.PARAMETER_KEY));
         checkBoxPuritySFW.setChecked(filterPurity.isSfwChecked());
         checkBoxPuritySketchy.setChecked(filterPurity.isSketchyChecked());
         checkBoxPuritySFW.setOnCheckedChangeListener(ratingCheckedChangeListener);
@@ -191,14 +191,14 @@ public class FilterDialogFragment extends MaterialDialogFragment {
         ListFilterGroup aspectRatioFilterGroup = new ListFilterGroup(FilterAspectRatioKeys.PARAMETER_KEY, FilterAspectRatioKeys.getOrderedList());
         ArrayAdapter filterAdapter = new ArrayAdapter(getActivity(), R.layout.view_filter_list_item, aspectRatioFilterGroup.getFilters());
         spinnerAspectRatio.setAdapter(filterAdapter);
-        Filter<String, String> defaultAspectRatio = WallyApplication.getDataProviderInstance().getAspectRatio(aspectRatioFilterGroup.getTag());
+        Filter<String, String> defaultAspectRatio = WallyApplication.getFilterProvider().getAspectRatio(aspectRatioFilterGroup.getTag());
         int defaultAspectRationPosition = aspectRatioFilterGroup.getFilters().indexOf(defaultAspectRatio);
         spinnerAspectRatio.setSelection(defaultAspectRationPosition);
     }
 
     private void setupResolutionSpinner() {
         final ListFilterGroup resolutionFilterGroup = new ListFilterGroup(FilterResolutionKeys.PARAMETER_KEY, FilterResolutionKeys.getOrderedList());
-        Filter<String, String> defaultResolution = WallyApplication.getDataProviderInstance().getResolution(resolutionFilterGroup.getTag());
+        Filter<String, String> defaultResolution = WallyApplication.getFilterProvider().getResolution(resolutionFilterGroup.getTag());
         if (defaultResolution.isCustom()){
             defaultResolution.setKey(defaultResolution.getValue() + "…");
             FilterResolutionKeys.RES_CUSTOM.setKey(defaultResolution.getKey());
@@ -246,28 +246,28 @@ public class FilterDialogFragment extends MaterialDialogFragment {
     public boolean saveChanges() {
 
         FilterBoards currentFilterBoards = new FilterBoards(checkBoxBoardGeneral.isChecked(), checkBoxBoardAnime.isChecked(), checkBoxBoardPeople.isChecked());
-        FilterBoards savedFilterBoards = new FilterBoards(WallyApplication.getDataProviderInstance().getBoards(FilterBoardsKeys.PARAMETER_KEY));
+        FilterBoards savedFilterBoards = new FilterBoards(WallyApplication.getFilterProvider().getBoards(FilterBoardsKeys.PARAMETER_KEY));
         if (!currentFilterBoards.equals(savedFilterBoards)){
-            WallyApplication.getDataProviderInstance().setBoards(FilterBoardsKeys.PARAMETER_KEY, currentFilterBoards.getFormattedValue());
+            WallyApplication.getFilterProvider().setBoards(FilterBoardsKeys.PARAMETER_KEY, currentFilterBoards.getFormattedValue());
             hasAnythingChanged = true;
         }
 
         FilterPurity currentFilterPurity = new FilterPurity(checkBoxPuritySFW.isChecked(), checkBoxPuritySketchy.isChecked());
-        FilterPurity savedFilterPurity = new FilterPurity(WallyApplication.getDataProviderInstance().getPurity(FilterPurityKeys.PARAMETER_KEY));
+        FilterPurity savedFilterPurity = new FilterPurity(WallyApplication.getFilterProvider().getPurity(FilterPurityKeys.PARAMETER_KEY));
         if (!currentFilterPurity.equals(savedFilterPurity)){
-            WallyApplication.getDataProviderInstance().setPurity(FilterPurityKeys.PARAMETER_KEY, currentFilterPurity.getFormattedValue());
+            WallyApplication.getFilterProvider().setPurity(FilterPurityKeys.PARAMETER_KEY, currentFilterPurity.getFormattedValue());
             hasAnythingChanged = true;
         }
 
         Filter<String, String> filterAspectRatio = (Filter<String, String>) spinnerAspectRatio.getSelectedItem();
-        if (!WallyApplication.getDataProviderInstance().getAspectRatio(FilterAspectRatioKeys.PARAMETER_KEY).equals(filterAspectRatio)){
-            WallyApplication.getDataProviderInstance().setAspectRatio(FilterAspectRatioKeys.PARAMETER_KEY, filterAspectRatio);
+        if (!WallyApplication.getFilterProvider().getAspectRatio(FilterAspectRatioKeys.PARAMETER_KEY).equals(filterAspectRatio)){
+            WallyApplication.getFilterProvider().setAspectRatio(FilterAspectRatioKeys.PARAMETER_KEY, filterAspectRatio);
             hasAnythingChanged = true;
         }
 
         Filter<String, String> filterResolution = (Filter<String, String>) spinnerResolution.getSelectedItem();
-        if (!WallyApplication.getDataProviderInstance().getResolution(FilterResolutionKeys.PARAMETER_KEY).equals(filterResolution)){
-            WallyApplication.getDataProviderInstance().setResolution(FilterResolutionKeys.PARAMETER_KEY, filterResolution);
+        if (!WallyApplication.getFilterProvider().getResolution(FilterResolutionKeys.PARAMETER_KEY).equals(filterResolution)){
+            WallyApplication.getFilterProvider().setResolution(FilterResolutionKeys.PARAMETER_KEY, filterResolution);
             hasAnythingChanged = true;
         }
 

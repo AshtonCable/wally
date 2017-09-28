@@ -62,7 +62,7 @@ import com.musenkishi.wally.R;
 import com.musenkishi.wally.anim.interpolator.EaseInOutBezierInterpolator;
 import com.musenkishi.wally.base.BaseActivity;
 import com.musenkishi.wally.base.WallyApplication;
-import com.musenkishi.wally.dataprovider.DataProvider;
+import com.musenkishi.wally.dataprovider.CustomDataProvider;
 import com.musenkishi.wally.dataprovider.FileManager;
 import com.musenkishi.wally.dataprovider.models.DataProviderError;
 import com.musenkishi.wally.dataprovider.models.SaveImageRequest;
@@ -660,7 +660,7 @@ public class ImageDetailsActivity extends BaseActivity implements Handler.Callba
         }
 
         SaveImageRequest saveImageRequest = WallyApplication
-                .getDataProviderInstance()
+                .getCustomDataProviderInstance()
                 .downloadImageIfNeeded(
                         imagePage.imagePath(),
                         pageUri.getLastPathSegment(),
@@ -685,7 +685,7 @@ public class ImageDetailsActivity extends BaseActivity implements Handler.Callba
                 startHeartPopoutAnimation(buttonSave, Color.WHITE);
             }
             String filename = pageUri.getLastPathSegment();
-            handleSavedImageData(WallyApplication.getDataProviderInstance().getFilePath(filename));
+            handleSavedImageData(WallyApplication.getCustomDataProviderInstance().getFilePath(filename));
         }
     }
 
@@ -881,9 +881,9 @@ public class ImageDetailsActivity extends BaseActivity implements Handler.Callba
             case MSG_GET_PAGE:
                 String url = (String) msg.obj;
                 if (url != null) {
-                    WallyApplication.getDataProviderInstance().getPageData(
+                    WallyApplication.getCustomDataProviderInstance().getPageData(
                             url,
-                            new DataProvider.OnPageReceivedListener() {
+                            new CustomDataProvider.OnPageReceivedListener() {
                                 @Override
                                 public void onPageReceived(ImagePage imagePage) {
                                     Message msgObj = uiHandler.obtainMessage();

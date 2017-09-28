@@ -54,7 +54,7 @@ public class WallyArtSource extends RemoteMuzeiArtSource {
 
     @Override
     protected void onTryUpdate(int reason) throws RetryException {
-        final ArrayList<Image> images = WallyApplication.getDataProviderInstance().getImagesSync(NetworkDataProvider.PATH_TOPLIST, 1, WallyApplication.getFilterSettings());
+        final ArrayList<Image> images = WallyApplication.getCustomDataProviderInstance().getImagesSync(NetworkDataProvider.PATH_TOPLIST, 1, WallyApplication.getFilterSettings());
         if (images != null) {
             if (images.size() == 0) {
                 scheduleUpdate(System.currentTimeMillis() + ROTATE_TIME_MILLIS);
@@ -75,7 +75,7 @@ public class WallyArtSource extends RemoteMuzeiArtSource {
     }
 
     private void getImageAndPublish(final Image image, final String newToken) throws RetryException {
-        ImagePage imagePage = WallyApplication.getDataProviderInstance().getPageDataSync(image.imagePageURL());
+        ImagePage imagePage = WallyApplication.getCustomDataProviderInstance().getPageDataSync(image.imagePageURL());
 
         if (imagePage != null) {
             publishArtwork(new Artwork.Builder()

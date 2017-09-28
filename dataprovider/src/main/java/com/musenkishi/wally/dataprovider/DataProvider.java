@@ -41,35 +41,17 @@ import static com.musenkishi.wally.dataprovider.NetworkDataProvider.OnDataReceiv
  * Use this class to get and set data.
  * Created by Musenkishi on 2014-02-28.
  */
-public class DataProvider {
+public class DataProvider implements IDataProvider {
 
     private static final String TAG = "DataProvider";
     private final Context context;
-    private SharedPreferencesDataProvider sharedPreferencesDataProvider;
     private DownloadManager downloadManager;
     private Parser parser;
 
-    public interface OnImagesReceivedListener {
-        abstract void onImagesReceived(ArrayList<Image> images);
-
-        abstract void onError(DataProviderError dataProviderError);
-    }
-
-    public interface OnPageReceivedListener {
-        abstract void onPageReceived(ImagePage imagePage);
-
-        abstract void onError(DataProviderError dataProviderError);
-    }
-
     public DataProvider(Context context, ExceptionReporter.OnReportListener onReportListener) {
-        sharedPreferencesDataProvider = new SharedPreferencesDataProvider(context);
         parser = new Parser(onReportListener);
         downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
         this.context = context;
-    }
-
-    public SharedPreferencesDataProvider getSharedPreferencesDataProviderInstance() {
-        return sharedPreferencesDataProvider;
     }
 
     public DownloadManager getDownloadManager() {
@@ -154,54 +136,6 @@ public class DataProvider {
                 }
             }
         });
-    }
-
-    public void setTimeSpan(String tag, Filter<String, String> timespan) {
-        sharedPreferencesDataProvider.setTimespan(tag, timespan);
-    }
-
-    public Filter<String, String> getTimespan(String tag) {
-        return sharedPreferencesDataProvider.getTimespan(tag);
-    }
-
-    public void setBoards(String tag, String paramValue) {
-        sharedPreferencesDataProvider.setBoards(tag, paramValue);
-    }
-
-    public String getBoards(String tag) {
-        return sharedPreferencesDataProvider.getBoards(tag);
-    }
-
-    public void setPurity(String tag, String paramValue) {
-        sharedPreferencesDataProvider.setPurity(tag, paramValue);
-    }
-
-    public String getPurity(String tag) {
-        return sharedPreferencesDataProvider.getPurity(tag);
-    }
-
-    public void setAspectRatio(String tag, Filter<String, String> aspectRatio) {
-        sharedPreferencesDataProvider.setAspectRatio(tag, aspectRatio);
-    }
-
-    public Filter<String, String> getAspectRatio(String tag) {
-        return sharedPreferencesDataProvider.getAspectRatio(tag);
-    }
-
-    public void setResolutionOption(String tag, String paramValue) {
-        sharedPreferencesDataProvider.setResolutionOption(tag, paramValue);
-    }
-
-    public String getResolutionOption(String tag) {
-        return sharedPreferencesDataProvider.getResolutionOption(tag);
-    }
-
-    public void setResolution(String tag, Filter<String, String> resolution) {
-        sharedPreferencesDataProvider.setResolution(tag, resolution);
-    }
-
-    public Filter<String, String> getResolution(String tag) {
-        return sharedPreferencesDataProvider.getResolution(tag);
     }
 
     public SaveImageRequest downloadImageIfNeeded(Uri path, String filename, String notificationTitle) {

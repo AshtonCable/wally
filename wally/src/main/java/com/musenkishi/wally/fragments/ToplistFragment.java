@@ -258,7 +258,7 @@ public class ToplistFragment extends GridFragment implements RecyclerImagesAdapt
 
             case MSG_GET_IMAGES:
                 final int index = msg.arg1;
-                WallyApplication.getDataProviderInstance().getImages(NetworkDataProvider.PATH_TOPLIST, index, WallyApplication.getFilterSettings(), new DataProvider.OnImagesReceivedListener() {
+                WallyApplication.getCustomDataProviderInstance().getImages(NetworkDataProvider.PATH_TOPLIST, index, WallyApplication.getFilterSettings(), new DataProvider.OnImagesReceivedListener() {
                     @Override
                     public void onImagesReceived(ArrayList<Image> images) {
                         Message msgObj = uiHandler.obtainMessage();
@@ -276,7 +276,7 @@ public class ToplistFragment extends GridFragment implements RecyclerImagesAdapt
 
             case MSG_SAVE_BUTTON_CLICKED:
                 Image image = (Image) msg.obj;
-                WallyApplication.getDataProviderInstance().getPageData(image.imagePageURL(), new DataProvider.OnPageReceivedListener() {
+                WallyApplication.getCustomDataProviderInstance().getPageData(image.imagePageURL(), new DataProvider.OnPageReceivedListener() {
                     @Override
                     public void onPageReceived(ImagePage imagePage) {
                         Message msgImagePage = uiHandler.obtainMessage();
@@ -303,7 +303,7 @@ public class ToplistFragment extends GridFragment implements RecyclerImagesAdapt
                         break;
                     }
 
-                    SaveImageRequest saveImageRequest = WallyApplication.getDataProviderInstance().downloadImageIfNeeded(
+                    SaveImageRequest saveImageRequest = WallyApplication.getCustomDataProviderInstance().downloadImageIfNeeded(
                             imagePage.imagePath(),
                             imagePage.imageId(),
                             getResources().getString(R.string.notification_title_image_saving));

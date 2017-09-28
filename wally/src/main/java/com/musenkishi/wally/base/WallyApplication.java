@@ -25,6 +25,8 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.model.GlideUrl;
 import com.musenkishi.wally.BuildConfig;
 import com.musenkishi.wally.dataprovider.DataProvider;
+import com.musenkishi.wally.dataprovider.CustomDataProvider;
+import com.musenkishi.wally.dataprovider.FilterProvider;
 import com.musenkishi.wally.dataprovider.SharedPreferencesDataProvider;
 import com.musenkishi.wally.dataprovider.okhttp.OkHttpUrlLoader;
 import com.musenkishi.wally.fragments.SearchFragment;
@@ -51,6 +53,8 @@ public class WallyApplication extends Application {
 
     private static boolean SHOULD_SHOW_CRASH_LOGGING_PERMISSION = false;
     private static DataProvider dataProvider;
+    private static CustomDataProvider customDataProvider;
+    private static FilterProvider filterProvider;
     private static Context applicationContext;
     private static HashMap<Long, String> pairedDownloadIds;
     private static HashSet<Long> downloadIDs;
@@ -71,7 +75,7 @@ public class WallyApplication extends Application {
     private void checkVersionInstalled(int currentVersion) {
         int defaultVersion = 1;
 
-        int latestVersion = getDataProviderInstance()
+        int latestVersion = getFilterProvider()
                 .getSharedPreferencesDataProviderInstance()
                 .getLatestVersion(defaultVersion); //This is just to get a default version.
 
@@ -80,7 +84,7 @@ public class WallyApplication extends Application {
             // Wallbase filter settings that conflicts with Wallhaven's filters.
             // That's why the user's settings gets reset.
             if (latestVersion == defaultVersion) {
-                getDataProviderInstance()
+                getFilterProvider()
                         .getSharedPreferencesDataProviderInstance()
                         .getPrefs()
                         .edit()
@@ -88,7 +92,7 @@ public class WallyApplication extends Application {
                         .apply();
             }
         }
-        getDataProviderInstance()
+        getFilterProvider()
                 .getSharedPreferencesDataProviderInstance()
                 .setLatestVersion(BuildConfig.VERSION_CODE);
     }
@@ -106,8 +110,8 @@ public class WallyApplication extends Application {
     }
 
     private void startCrashLoggingIfUserAccepted() {
-        if (getDataProviderInstance().getSharedPreferencesDataProviderInstance().getAppStartCount() >= FAMILIAR_USER_COUNT) {
-            switch (getDataProviderInstance().getSharedPreferencesDataProviderInstance().hasUserApprovedCrashLogging()){
+        if (getFilterProvider().getSharedPreferencesDataProviderInstance().getAppStartCount() >= FAMILIAR_USER_COUNT) {
+            switch (getFilterProvider().getSharedPreferencesDataProviderInstance().hasUserApprovedCrashLogging()){
 
                 case SharedPreferencesDataProvider.CRASH_LOGGING_APPROVED:
                     startCrashlytics(getContext());
@@ -124,7 +128,7 @@ public class WallyApplication extends Application {
                     break;
             }
         } else {
-            getDataProviderInstance().getSharedPreferencesDataProviderInstance().incrementAppStartCount();
+            getFilterProvider().getSharedPreferencesDataProviderInstance().incrementAppStartCount();
         }
     }
 
@@ -136,7 +140,7 @@ public class WallyApplication extends Application {
             dataProvider = new DataProvider(getContext(), new ExceptionReporter.OnReportListener() {
                 @Override
                 public void report(Class fromClass, String reason, String exceptionMessage) {
-                    if (getDataProviderInstance()
+                    if (getFilterProvider()
                             .getSharedPreferencesDataProviderInstance()
                             .hasUserApprovedCrashLogging() ==
                             SharedPreferencesDataProvider.CRASH_LOGGING_APPROVED) {
@@ -150,6 +154,33 @@ public class WallyApplication extends Application {
         return dataProvider;
     }
 
+    public static FilterProvider getFilterProvider(){
+        if(filterProvider == null){
+            filterProvider = new FilterProvider(getContext());
+        }
+        return filterProvider;
+    }
+
+
+    public static CustomDataProvider getCustomDataProviderInstance(){
+        if (customDataProvider == null){
+            customDataProvider = new CustomDataProvider(getContext(), new ExceptionReporter.OnReportListener() {
+                @Override
+                public void report(Class fromClass, String reason, String exceptionMessage) {
+                    if (getFilterProvider()
+                            .getSharedPreferencesDataProviderInstance()
+                            .hasUserApprovedCrashLogging() ==
+                            SharedPreferencesDataProvider.CRASH_LOGGING_APPROVED) {
+                        String message = "Class: " + fromClass.getName() + ", reason: " + reason +
+                                ", exceptionMessage: " + exceptionMessage;
+                        Log.w(WallyApplication.class.getSimpleName(), message);
+                    }
+                }
+            });
+        }
+        return customDataProvider;
+    }
+
     public static HashMap<Long, String> getDownloadIDs() {
         if (pairedDownloadIds == null) {
             pairedDownloadIds = new HashMap<Long, String>();
@@ -159,12 +190,12 @@ public class WallyApplication extends Application {
 
     public static FilterGroupsStructure getFilterSettings(){
         FilterGroupsStructure filterGroupsStructure = new FilterGroupsStructure();
-        filterGroupsStructure.setTimespanFilter(dataProvider.getTimespan(FilterTimeSpanKeys.PARAMETER_KEY));
-        filterGroupsStructure.setBoardsFilter(dataProvider.getBoards(FilterBoardsKeys.PARAMETER_KEY));
-        filterGroupsStructure.setPurityFilter(dataProvider.getPurity(FilterPurityKeys.PARAMETER_KEY));
-        filterGroupsStructure.setAspectRatioFilter(dataProvider.getAspectRatio(FilterAspectRatioKeys.PARAMETER_KEY));
-        filterGroupsStructure.setResOptFilter(dataProvider.getResolutionOption(FilterResOptKeys.PARAMETER_KEY));
-        filterGroupsStructure.setResolutionFilter(dataProvider.getResolution(FilterResolutionKeys.PARAMETER_KEY));
+        filterGroupsStructure.setTimespanFilter(filterProvider.getTimespan(FilterTimeSpanKeys.PARAMETER_KEY));
+        filterGroupsStructure.setBoardsFilter(filterProvider.getBoards(FilterBoardsKeys.PARAMETER_KEY));
+        filterGroupsStructure.setPurityFilter(filterProvider.getPurity(FilterPurityKeys.PARAMETER_KEY));
+        filterGroupsStructure.setAspectRatioFilter(filterProvider.getAspectRatio(FilterAspectRatioKeys.PARAMETER_KEY));
+        filterGroupsStructure.setResOptFilter(filterProvider.getResolutionOption(FilterResOptKeys.PARAMETER_KEY));
+        filterGroupsStructure.setResolutionFilter(filterProvider.getResolution(FilterResolutionKeys.PARAMETER_KEY));
         return filterGroupsStructure;
     }
 

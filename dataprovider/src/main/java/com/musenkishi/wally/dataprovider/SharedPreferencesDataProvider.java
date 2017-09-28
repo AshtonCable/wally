@@ -33,14 +33,14 @@ import com.musenkishi.wally.models.filters.FilterTimeSpanKeys;
  */
 public class SharedPreferencesDataProvider {
 
-    public static final String SHARED_PREF_KEY = "com.musenkishi.wally.sharedpreferences";
+    private static final String SHARED_PREF_KEY = "com.musenkishi.wally.sharedpreferences";
 
-    public static final String FILTER_KEY = ".filterKey";
-    public static final String FILTER_VALUE = ".filterValue";
+    private static final String FILTER_KEY = ".filterKey";
+    private static final String FILTER_VALUE = ".filterValue";
     private static final String FILTER_CUSTOM = ".filterIsCustom";
-    public static final String CRASH_LOGGING = ".crashlogging";
-    public static final String APP_START_COUNT = ".appStartCount";
-    public static final String LATEST_VERSION_INSTALLED = ".lastVersionInstalled";
+    private static final String CRASH_LOGGING = ".crashlogging";
+    private static final String APP_START_COUNT = ".appStartCount";
+    private static final String LATEST_VERSION_INSTALLED = ".lastVersionInstalled";
 
     public static final int CRASH_LOGGING_NOT_READ = 193784;
     public static final int CRASH_LOGGING_NOT_APPROVED = 193785;
@@ -52,7 +52,7 @@ public class SharedPreferencesDataProvider {
         return sharedPreferences;
     }
 
-    public SharedPreferencesDataProvider(Context context) {
+    SharedPreferencesDataProvider(Context context) {
         sharedPreferences = context.getSharedPreferences(SHARED_PREF_KEY, Context.MODE_PRIVATE);
     }
 
@@ -81,60 +81,60 @@ public class SharedPreferencesDataProvider {
         sharedPreferences.edit().putInt(CRASH_LOGGING, crashLoggingState).apply();
     }
 
-    public Filter<String, String> getTimespan(String tag){
+    Filter<String, String> getTimespan(String tag){
         String savedKey = sharedPreferences.getString(tag + FILTER_KEY, FilterTimeSpanKeys.TIMESPAN_3_DAYS.getKey());
         String savedValue = sharedPreferences.getString(tag + FILTER_VALUE, FilterTimeSpanKeys.TIMESPAN_3_DAYS.getValue());
         return new Filter<String, String>(savedKey, savedValue);
     }
 
-    public void setTimespan(String tag, Filter<String, String> timespan){
+    void setTimespan(String tag, Filter<String, String> timespan){
         sharedPreferences.edit().putString(tag + FILTER_KEY, timespan.getKey()).apply();
         sharedPreferences.edit().putString(tag + FILTER_VALUE, timespan.getValue()).apply();
     }
 
-    public String getBoards(String tag) {
+    String getBoards(String tag) {
         return sharedPreferences.getString(tag, FilterBoardsKeys.BOARD_GENERAL_KEY + FilterBoardsKeys.BOARD_ANIME_KEY + "0");
     }
 
-    public void setBoards(String tag, String paramValue) {
+    void setBoards(String tag, String paramValue) {
         sharedPreferences.edit().putString(tag, paramValue).apply();
     }
 
-    public String getPurity(String tag) {
+    String getPurity(String tag) {
         return sharedPreferences.getString(tag, FilterPurityKeys.SFW_KEY + "00"); //This will default to SFW purity
     }
 
-    public void setPurity(String tag, String paramValue) {
+    void setPurity(String tag, String paramValue) {
         sharedPreferences.edit().putString(tag, paramValue).apply();
     }
 
-    public Filter<String, String> getAspectRatio(String tag){
+    Filter<String, String> getAspectRatio(String tag){
         String savedKey = sharedPreferences.getString(tag + FILTER_KEY, FilterAspectRatioKeys.RATIO_ALL.getKey());
         String savedValue = sharedPreferences.getString(tag + FILTER_VALUE, FilterAspectRatioKeys.RATIO_ALL.getValue());
         return new Filter<String, String>(savedKey, savedValue);
     }
 
-    public void setAspectRatio(String tag, Filter<String, String> aspectRatio){
+    void setAspectRatio(String tag, Filter<String, String> aspectRatio){
         sharedPreferences.edit().putString(tag + FILTER_KEY, aspectRatio.getKey()).apply();
         sharedPreferences.edit().putString(tag + FILTER_VALUE, aspectRatio.getValue()).apply();
     }
 
-    public String getResolutionOption(String tag) {
+    String getResolutionOption(String tag) {
         return sharedPreferences.getString(tag, FilterResOptKeys.EXACTLY);
     }
 
-    public void setResolutionOption(String tag, String paramValue){
+    void setResolutionOption(String tag, String paramValue){
         sharedPreferences.edit().putString(tag, paramValue).apply();
     }
 
-    public Filter<String, String> getResolution(String tag){
+    Filter<String, String> getResolution(String tag){
         String savedKey = sharedPreferences.getString(tag + FILTER_KEY, FilterResolutionKeys.RES_ALL.getKey());
         String savedValue = sharedPreferences.getString(tag + FILTER_VALUE, FilterResolutionKeys.RES_ALL.getValue());
         boolean savedIsCustom = sharedPreferences.getBoolean(tag + FILTER_CUSTOM, FilterResolutionKeys.RES_ALL.isCustom());
         return new Filter<String, String>(savedKey, savedValue, savedIsCustom);
     }
 
-    public void setResolution(String tag, Filter<String, String> resolution) {
+    void setResolution(String tag, Filter<String, String> resolution) {
         sharedPreferences.edit().putString(tag + FILTER_KEY, resolution.getKey()).apply();
         sharedPreferences.edit().putString(tag + FILTER_VALUE, resolution.getValue()).apply();
         sharedPreferences.edit().putBoolean(tag + FILTER_CUSTOM, resolution.isCustom()).apply();
