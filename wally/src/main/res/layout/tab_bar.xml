@@ -37,6 +37,8 @@
             wally:text="@string/title_section_toplist"
             />
 
+    <!-- Remove the below comment to add the latest, random, and search fragments to the app-->
+    <!--
     <com.musenkishi.wally.views.TabView
         android:id="@+id/tab_latest"
         android:layout_width="wrap_content"
@@ -69,7 +71,7 @@
             wally:src="@drawable/ic_action_random"
             wally:text="@string/title_section_random"
             />
-
+    -->
     <com.musenkishi.wally.views.TabView
             android:id="@+id/tab_saved"
             android:layout_width="wrap_content"
