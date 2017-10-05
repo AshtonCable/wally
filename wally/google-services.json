@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "279513861720",
+    "firebase_url": "https://wally-image-source.firebaseio.com",
+    "project_id": "wally-image-source",
+    "storage_bucket": "wally-image-source.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:279513861720:android:5bebaf2660b86328",
+        "android_client_info": {
+          "package_name": "com.musenkishi.wallbase.dataprovider"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "279513861720-o5d7phm3cejjiphnclvaf2flernchrko.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.musenkishi.wallbase.dataprovider",
+            "certificate_hash": "22f3bc37cf5d5cd0f4e14ad00c4d46fac395c99b"
+          }
+        },
+        {
+          "client_id": "279513861720-jfia7g7s4apeaq01djhftac4quqo2861.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCwpTZ34n4D3Nxz0yO4vFf0MppBU9INjTs"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "279513861720-jfia7g7s4apeaq01djhftac4quqo2861.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

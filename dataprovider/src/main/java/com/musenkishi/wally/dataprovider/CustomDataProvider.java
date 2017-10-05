@@ -6,9 +6,13 @@ import android.net.Uri;
 import android.os.Environment;
 import android.support.v4.content.FileProvider;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.musenkishi.wally.dataprovider.models.SaveImageRequest;
 import com.musenkishi.wally.models.ExceptionReporter;
-import com.musenkishi.wally.models.Filter;
 import com.musenkishi.wally.models.Image;
 import com.musenkishi.wally.models.ImagePage;
 import com.musenkishi.wally.models.filters.FilterGroupsStructure;
@@ -42,26 +46,38 @@ public class CustomDataProvider implements IDataProvider {
     @Override
     public ArrayList<Image> getImagesSync(String path, int index,
                                           FilterGroupsStructure filterGroupsStructure) {
-        return DummyImageCreator.getImages();
+        return ImageCreator.getImages();
     }
 
     @Override
     public void getImages(String path, int index, FilterGroupsStructure filterGroupsStructure,
-                          OnImagesReceivedListener onImagesReceivedListener) {
-        if (onImagesReceivedListener != null) {
-            onImagesReceivedListener.onImagesReceived(DummyImageCreator.getImages());
-        }
+                          final OnImagesReceivedListener onImagesReceivedListener) {
+        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
+        dbRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (onImagesReceivedListener != null) {
+                    ImageCreator.fillData(dataSnapshot);
+                    onImagesReceivedListener.onImagesReceived(ImageCreator.getImages());
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     @Override
     public ImagePage getPageDataSync(String imagePageUrl) {
-        return DummyImageCreator.getImagePage(imagePageUrl);
+        return ImageCreator.getImagePage(imagePageUrl);
     }
 
     @Override
     public void getPageData(String imagePageUrl, OnPageReceivedListener onPageReceivedListener) {
         if (onPageReceivedListener != null) {
-            onPageReceivedListener.onPageReceived(DummyImageCreator.getImagePage(imagePageUrl));
+            onPageReceivedListener.onPageReceived(ImageCreator.getImagePage(imagePageUrl));
         }
     }
 
