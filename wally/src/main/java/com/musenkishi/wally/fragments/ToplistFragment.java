@@ -303,7 +303,7 @@ public class ToplistFragment extends GridFragment implements RecyclerImagesAdapt
                         break;
                     }
 
-                    SaveImageRequest saveImageRequest = WallyApplication.getCustomDataProviderInstance().downloadImageIfNeeded(
+                    SaveImageRequest saveImageRequest = WallyApplication.getImageDownloadManagerInstance().downloadImageIfNeeded(
                             imagePage.imagePath(),
                             imagePage.imageId(),
                             getResources().getString(R.string.notification_title_image_saving));

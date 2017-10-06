@@ -730,7 +730,7 @@ public class ImageDetailsActivity extends BaseActivity implements Handler.Callba
         }
 
         SaveImageRequest saveImageRequest = WallyApplication
-                .getCustomDataProviderInstance()
+                .getImageDownloadManagerInstance()
                 .downloadImageIfNeeded(
                         imagePage.imagePath(),
                         pageUri.getLastPathSegment(),
@@ -755,7 +755,7 @@ public class ImageDetailsActivity extends BaseActivity implements Handler.Callba
                 startHeartPopoutAnimation(buttonSave, Color.WHITE);
             }
             String filename = pageUri.getLastPathSegment();
-            handleSavedImageData(WallyApplication.getCustomDataProviderInstance().getFilePath(filename));
+            handleSavedImageData(WallyApplication.getImageDownloadManagerInstance().getFilePath(filename));
         }
     }
 

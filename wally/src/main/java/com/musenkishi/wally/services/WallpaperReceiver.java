@@ -4,7 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-import com.musenkishi.wally.dataprovider.PeriodicRandomImage;
+import com.musenkishi.wally.base.WallyApplication;
 
 /**
  * Created by Maher on 10/6/2017.
@@ -14,6 +14,6 @@ import com.musenkishi.wally.dataprovider.PeriodicRandomImage;
 public class WallpaperReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-        PeriodicRandomImage.setRandomWallpaper(context);
+        WallyApplication.getCustomDataProviderInstance().setRandomWallpaper();
     }
 }

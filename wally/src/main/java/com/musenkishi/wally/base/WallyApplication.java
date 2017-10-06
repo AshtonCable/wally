@@ -27,6 +27,7 @@ import com.musenkishi.wally.BuildConfig;
 import com.musenkishi.wally.dataprovider.DataProvider;
 import com.musenkishi.wally.dataprovider.CustomDataProvider;
 import com.musenkishi.wally.dataprovider.FilterProvider;
+import com.musenkishi.wally.dataprovider.ImageDownloadManager;
 import com.musenkishi.wally.dataprovider.SharedPreferencesDataProvider;
 import com.musenkishi.wally.dataprovider.okhttp.OkHttpUrlLoader;
 import com.musenkishi.wally.fragments.SearchFragment;
@@ -54,6 +55,7 @@ public class WallyApplication extends Application {
     private static boolean SHOULD_SHOW_CRASH_LOGGING_PERMISSION = false;
     private static DataProvider dataProvider;
     private static CustomDataProvider customDataProvider;
+    private static ImageDownloadManager imageDownloadManager;
     private static FilterProvider filterProvider;
     private static Context applicationContext;
     private static HashMap<Long, String> pairedDownloadIds;
@@ -179,6 +181,13 @@ public class WallyApplication extends Application {
             });
         }
         return customDataProvider;
+    }
+
+    public static ImageDownloadManager getImageDownloadManagerInstance(){
+        if(imageDownloadManager == null){
+            imageDownloadManager = new ImageDownloadManager(getContext());
+        }
+        return imageDownloadManager;
     }
 
     public static HashMap<Long, String> getDownloadIDs() {

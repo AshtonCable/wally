@@ -18,10 +18,6 @@ import java.util.ArrayList;
 
 interface IDataProvider {
 
-    void getImages(String path, String query, String color, int index,
-                   FilterGroupsStructure filterGroupsStructure,
-                   final DataProvider.OnImagesReceivedListener onImagesReceivedListener);
-
     ArrayList<Image> getImagesSync(String path, int index,
                                    FilterGroupsStructure filterGroupsStructure);
 
@@ -32,10 +28,6 @@ interface IDataProvider {
 
     void getPageData(String imagePageUrl,
                      final IDataProvider.OnPageReceivedListener onPageReceivedListener);
-
-    SaveImageRequest downloadImageIfNeeded(Uri path, String filename, String notificationTitle);
-
-    Uri getFilePath(String filename);
 
     interface OnImagesReceivedListener {
         void onImagesReceived(ArrayList<Image> images);
@@ -48,6 +40,4 @@ interface IDataProvider {
 
         void onError(DataProviderError dataProviderError);
     }
-
-
 }
