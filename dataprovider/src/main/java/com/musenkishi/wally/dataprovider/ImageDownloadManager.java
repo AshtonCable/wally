@@ -33,7 +33,9 @@ public class ImageDownloadManager {
         } else {
 
             String type = ".png"; //fallback to ".png"
-
+            if (path.toString().lastIndexOf(".") != -1) { //-1 means there are no punctuations in the path
+                type = path.toString().substring(path.toString().lastIndexOf("."));
+            }
             DownloadManager.Request request = new DownloadManager.Request(path);
             request.setTitle(notificationTitle);
             request.setVisibleInDownloadsUi(false);

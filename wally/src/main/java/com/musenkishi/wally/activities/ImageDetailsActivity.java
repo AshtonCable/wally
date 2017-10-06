@@ -24,6 +24,8 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -82,6 +84,8 @@ import com.musenkishi.wally.util.Blur;
 import com.musenkishi.wally.views.FlowLayout;
 import com.musenkishi.wally.views.ObservableScrollView;
 
+import java.util.List;
+
 import uk.co.senab.photoview.PhotoViewAttacher;
 
 import static com.musenkishi.wally.views.ObservableScrollView.ScrollViewListener;
@@ -96,6 +100,7 @@ public class ImageDetailsActivity extends BaseActivity implements Handler.Callba
     public static final String INTENT_EXTRA_IMAGE = TAG + ".Intent.Image";
     public static final String INTENT_EXTRA_TAG_NAME = TAG + ".Intent.Tag.Name";
     public static final int REQUEST_EXTRA_TAG = 13134;
+    public static final String PREF_IS_DAILY_ACTIVATED = "PREF_IS_DAILY_ACTIVATED";
     private static final int MSG_GET_PAGE = 130;
     private static final int MSG_PAGE_FETCHED = 417892;
     private static final int MSG_PAGE_ERROR = 417891;
@@ -107,7 +112,6 @@ public class ImageDetailsActivity extends BaseActivity implements Handler.Callba
     private static final int MSG_SET_IMAGE_AND_PALETTE = 987488;
     private static final int MSG_SCROLL_UP_SCROLLVIEW = 987489;
     private static final String STATE_IMAGE_PAGE = "ImageDetailsActivity.ImagePage";
-    public static final String PREF_IS_DAILY_ACTIVATED = "PREF_IS_DAILY_ACTIVATED";
     private Handler uiHandler;
     private Handler backgroundHandler;
 
@@ -447,7 +451,14 @@ public class ImageDetailsActivity extends BaseActivity implements Handler.Callba
         String mimeType = map.getMimeTypeFromExtension("png");
         intent.setDataAndType(path, mimeType);
         intent.putExtra("mimeType", mimeType);
+
+        List<ResolveInfo> resolvedIntentActivities = getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+        for (ResolveInfo resolvedIntentInfo : resolvedIntentActivities) {
+            String packageName = resolvedIntentInfo.activityInfo.packageName;
+            grantUriPermission(packageName, path, Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        }
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
 
         startActivity(Intent.createChooser(intent, getString(R.string.action_set_as)));
     }
@@ -630,18 +641,18 @@ public class ImageDetailsActivity extends BaseActivity implements Handler.Callba
         }
     }
 
-    private void writeActivatedDailyToPreferences(boolean isDailyActivated){
+    private void writeActivatedDailyToPreferences(boolean isDailyActivated) {
         SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putBoolean(PREF_IS_DAILY_ACTIVATED, isDailyActivated);
     }
 
-    private boolean readActivatedDailyFromPreferences(){
+    private boolean readActivatedDailyFromPreferences() {
         SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
         return sharedPref.getBoolean(PREF_IS_DAILY_ACTIVATED, false);
     }
 
-    private void activateDailyWallpaperAlarm(){
+    private void activateDailyWallpaperAlarm() {
         AlarmManager alarmMgr = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         Intent myIntent = new Intent(ImageDetailsActivity.this, WallpaperReceiver.class);
         PendingIntent alarmIntent = PendingIntent.getBroadcast(ImageDetailsActivity.this, 0, myIntent, 0);
@@ -650,7 +661,7 @@ public class ImageDetailsActivity extends BaseActivity implements Handler.Callba
                 AlarmManager.INTERVAL_DAY, alarmIntent);
     }
 
-    private void deactivateDailyWallpaperAlarm(){
+    private void deactivateDailyWallpaperAlarm() {
         AlarmManager alarmMgr = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         Intent myIntent = new Intent(ImageDetailsActivity.this, WallpaperReceiver.class);
         PendingIntent alarmIntent = PendingIntent.getBroadcast(ImageDetailsActivity.this, 0, myIntent, 0);
