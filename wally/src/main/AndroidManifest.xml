@@ -20,6 +20,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.SET_WALLPAPER" />
 
     <!-- Required by RemoteMuzeiArtSource -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -79,6 +80,7 @@
                 android:name="color"
                 android:value="@color/Actionbar.TopList.Background" />
         </service>
+        <receiver android:name=".services.WallpaperReceiver"/>
 
         <meta-data
             android:name="com.crashlytics.ApiKey"

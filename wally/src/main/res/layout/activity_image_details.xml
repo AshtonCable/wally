@@ -117,6 +117,15 @@
                         android:text="@string/action_save"
                         android:textColor="@color/Black.Light"/>
 
+                    <Button
+                        android:id="@+id/toolbar_activate_daily"
+                        style="@style/Button.Material.Flat"
+                        android:gravity="center"
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/button_material_flat_height"
+                        android:text="@string/action_activate_daily_off"
+                        android:textColor="@color/Black.Light"/>
+
                 </LinearLayout>
 
                 <ImageButton

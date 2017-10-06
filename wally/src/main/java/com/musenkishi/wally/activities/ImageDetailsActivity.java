@@ -18,9 +18,12 @@ package com.musenkishi.wally.activities;
 
 import android.animation.Animator;
 import android.animation.ValueAnimator;
+import android.app.AlarmManager;
 import android.app.DownloadManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -32,6 +35,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
+import android.os.SystemClock;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.ShareActionProvider;
@@ -73,6 +77,7 @@ import com.musenkishi.wally.models.ImagePage;
 import com.musenkishi.wally.models.Size;
 import com.musenkishi.wally.models.Tag;
 import com.musenkishi.wally.observers.FileReceiver;
+import com.musenkishi.wally.services.WallpaperReceiver;
 import com.musenkishi.wally.util.Blur;
 import com.musenkishi.wally.views.FlowLayout;
 import com.musenkishi.wally.views.ObservableScrollView;
@@ -87,6 +92,10 @@ import static com.musenkishi.wally.views.ObservableScrollView.ScrollViewListener
  */
 public class ImageDetailsActivity extends BaseActivity implements Handler.Callback {
 
+    public static final String TAG = "com.musenkishi.wally.ImageDetailsActivity";
+    public static final String INTENT_EXTRA_IMAGE = TAG + ".Intent.Image";
+    public static final String INTENT_EXTRA_TAG_NAME = TAG + ".Intent.Tag.Name";
+    public static final int REQUEST_EXTRA_TAG = 13134;
     private static final int MSG_GET_PAGE = 130;
     private static final int MSG_PAGE_FETCHED = 417892;
     private static final int MSG_PAGE_ERROR = 417891;
@@ -97,15 +106,8 @@ public class ImageDetailsActivity extends BaseActivity implements Handler.Callba
     private static final int MSG_RENDER_PALETTE = 987487;
     private static final int MSG_SET_IMAGE_AND_PALETTE = 987488;
     private static final int MSG_SCROLL_UP_SCROLLVIEW = 987489;
-
-
-    public static final String TAG = "com.musenkishi.wally.ImageDetailsActivity";
     private static final String STATE_IMAGE_PAGE = "ImageDetailsActivity.ImagePage";
-
-    public static final String INTENT_EXTRA_IMAGE = TAG + ".Intent.Image";
-    public static final String INTENT_EXTRA_TAG_NAME = TAG + ".Intent.Tag.Name";
-    public static final int REQUEST_EXTRA_TAG = 13134;
-
+    public static final String PREF_IS_DAILY_ACTIVATED = "PREF_IS_DAILY_ACTIVATED";
     private Handler uiHandler;
     private Handler backgroundHandler;
 
@@ -124,6 +126,7 @@ public class ImageDetailsActivity extends BaseActivity implements Handler.Callba
     private FlowLayout flowLayoutTags;
     private Button buttonSetAs;
     private Button buttonSave;
+    private Button buttonActivateDaily;
     private ImagePage imagePage;
     private ViewGroup imageHolder;
     private ViewGroup photoLayoutHolder;
@@ -136,6 +139,8 @@ public class ImageDetailsActivity extends BaseActivity implements Handler.Callba
 
     private boolean isInFullscreen = false;
     private View detailsViewGroup;
+
+    private boolean isDailyActivated;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -162,7 +167,7 @@ public class ImageDetailsActivity extends BaseActivity implements Handler.Callba
 
         if (Intent.ACTION_VIEW.equals(action)) {
             pageUri = Uri.parse(intent.getDataString());
-            if ("wally".equalsIgnoreCase(pageUri.getScheme())){
+            if ("wally".equalsIgnoreCase(pageUri.getScheme())) {
                 pageUri = pageUri.buildUpon().scheme("http").build();
             }
         }
@@ -170,7 +175,7 @@ public class ImageDetailsActivity extends BaseActivity implements Handler.Callba
         setupViews();
         setupHandlers();
 
-        Size size = new Size(16,9);
+        Size size = new Size(16, 9);
 
         if (intent.hasExtra(INTENT_EXTRA_IMAGE)) {
             final Image image = intent.getParcelableExtra(INTENT_EXTRA_IMAGE);
@@ -199,7 +204,7 @@ public class ImageDetailsActivity extends BaseActivity implements Handler.Callba
 
         if (savedInstanceState == null) {
             getPage(pageUri.toString());
-        } else if (savedInstanceState.containsKey(STATE_IMAGE_PAGE)){
+        } else if (savedInstanceState.containsKey(STATE_IMAGE_PAGE)) {
             imagePage = savedInstanceState.getParcelable(STATE_IMAGE_PAGE);
         }
 
@@ -250,10 +255,10 @@ public class ImageDetailsActivity extends BaseActivity implements Handler.Callba
             });
             valueAnimator.start();
         } else {
-            photoLayoutHolder.setPadding(0, 0, 0, 0 );
+            photoLayoutHolder.setPadding(0, 0, 0, 0);
         }
 
-        scrollView.setPadding(0, 0, 0, -fabPadding );
+        scrollView.setPadding(0, 0, 0, -fabPadding);
         specsLayout.setPadding(0, 0, 0, fabPadding);
 
         ValueAnimator valueAnimator = ValueAnimator.ofInt(detailsViewGroup.getPaddingTop(), size.getHeight());
@@ -348,6 +353,7 @@ public class ImageDetailsActivity extends BaseActivity implements Handler.Callba
         flowLayoutTags = (FlowLayout) findViewById(R.id.image_details_tags_layout);
         buttonSetAs = (Button) findViewById(R.id.toolbar_set_as);
         buttonSave = (Button) findViewById(R.id.toolbar_save);
+        buttonActivateDaily = (Button) findViewById(R.id.toolbar_activate_daily);
         toolbar = (ViewGroup) findViewById(R.id.image_details_toolbar);
         photoLayoutHolder = (ViewGroup) findViewById(R.id.image_details_photo_layout_holder);
         specsLayout = (ViewGroup) findViewById(R.id.image_details_specs);
@@ -406,7 +412,7 @@ public class ImageDetailsActivity extends BaseActivity implements Handler.Callba
                     photoViewAttacher.getDrawMatrix().getValues(values);
                     float imageHeight = imageSize.getHeight();
 
-                    float diff = imageHeight/displayHeight;
+                    float diff = imageHeight / displayHeight;
 
                     if (y > oldy) {
                         diff = -diff;
@@ -495,7 +501,7 @@ public class ImageDetailsActivity extends BaseActivity implements Handler.Callba
         }
     }
 
-    private void setColors(Palette palette){
+    private void setColors(Palette palette) {
         this.palette = palette;
         hideLoader();
 
@@ -528,8 +534,9 @@ public class ImageDetailsActivity extends BaseActivity implements Handler.Callba
             toolbar.setBackgroundColor(swatch.getRgb());
             buttonSetAs.setTextColor(swatch.getBodyTextColor());
             buttonSave.setTextColor(swatch.getBodyTextColor());
+            buttonActivateDaily.setTextColor(swatch.getBodyTextColor());
             setToolbarClickListeners();
-
+            setActivateDailyClickListener();
             animateToolbar(View.VISIBLE);
         }
 
@@ -537,6 +544,7 @@ public class ImageDetailsActivity extends BaseActivity implements Handler.Callba
 
     /**
      * Animations animations animations.
+     *
      * @param visibility if VISIBLE, expands toolbar.
      */
     private void animateToolbar(int visibility) {
@@ -614,6 +622,68 @@ public class ImageDetailsActivity extends BaseActivity implements Handler.Callba
 
     }
 
+    private void toggleActivateDailyText(boolean isDailyActivated) {
+        if (isDailyActivated) {
+            buttonActivateDaily.setText(R.string.action_activate_daily_on);
+        } else {
+            buttonActivateDaily.setText(R.string.action_activate_daily_off);
+        }
+    }
+
+    private void writeActivatedDailyToPreferences(boolean isDailyActivated){
+        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putBoolean(PREF_IS_DAILY_ACTIVATED, isDailyActivated);
+    }
+
+    private boolean readActivatedDailyFromPreferences(){
+        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+        return sharedPref.getBoolean(PREF_IS_DAILY_ACTIVATED, false);
+    }
+
+    private void activateDailyWallpaperAlarm(){
+        AlarmManager alarmMgr = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        Intent myIntent = new Intent(ImageDetailsActivity.this, WallpaperReceiver.class);
+        PendingIntent alarmIntent = PendingIntent.getBroadcast(ImageDetailsActivity.this, 0, myIntent, 0);
+        alarmMgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                SystemClock.elapsedRealtime() + AlarmManager.INTERVAL_DAY,
+                AlarmManager.INTERVAL_DAY, alarmIntent);
+    }
+
+    private void deactivateDailyWallpaperAlarm(){
+        AlarmManager alarmMgr = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        Intent myIntent = new Intent(ImageDetailsActivity.this, WallpaperReceiver.class);
+        PendingIntent alarmIntent = PendingIntent.getBroadcast(ImageDetailsActivity.this, 0, myIntent, 0);
+        if (alarmMgr != null) {
+            alarmMgr.cancel(alarmIntent);
+        }
+    }
+
+    private void setActivateDailyClickListener() {
+        isDailyActivated = readActivatedDailyFromPreferences();
+        toggleActivateDailyText(isDailyActivated);
+        buttonActivateDaily.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlarmManager alarmMgr = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+                if (!isDailyActivated) {
+                    activateDailyWallpaperAlarm();
+                    isDailyActivated = true;
+                    toggleActivateDailyText(isDailyActivated);
+                    writeActivatedDailyToPreferences(isDailyActivated);
+                    Toast.makeText(ImageDetailsActivity.this, "Automatic Daily Wallpaper Activated!", Toast.LENGTH_LONG).show();
+                } else {
+                    deactivateDailyWallpaperAlarm();
+                    isDailyActivated = false;
+                    toggleActivateDailyText(isDailyActivated);
+                    writeActivatedDailyToPreferences(isDailyActivated);
+                    Toast.makeText(ImageDetailsActivity.this, "Automatic Daily Wallpaper Deactivated!", Toast.LENGTH_LONG).show();
+
+                }
+            }
+        });
+    }
+
     private void setToolbarClickListeners() {
         buttonSetAs.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -636,7 +706,7 @@ public class ImageDetailsActivity extends BaseActivity implements Handler.Callba
                 buttonSave.setText(R.string.saved);
                 buttonSave.setAlpha(0.5f);
             } else {
-                if (!buttonSave.isClickable()){
+                if (!buttonSave.isClickable()) {
                     buttonSave.setClickable(true);
                     buttonSave.setText(R.string.action_save);
                 }
@@ -666,7 +736,7 @@ public class ImageDetailsActivity extends BaseActivity implements Handler.Callba
                         pageUri.getLastPathSegment(),
                         getResources().getString(R.string.notification_title_image_saving));
 
-        if (saveImageRequest.getDownloadID() != null){
+        if (saveImageRequest.getDownloadID() != null) {
             WallyApplication.getDownloadIDs().put(saveImageRequest.getDownloadID(), pageUri.getLastPathSegment());
         } else {
             handleSavedImageData(saveImageRequest.getFilePath());
@@ -676,7 +746,7 @@ public class ImageDetailsActivity extends BaseActivity implements Handler.Callba
     @Override
     protected void handleReceivedIntent(Context context, Intent intent) {
         long id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, 0L);
-        if (WallyApplication.getDownloadIDs().containsKey(id)){
+        if (WallyApplication.getDownloadIDs().containsKey(id)) {
             WallyApplication.getDownloadIDs().remove(id);
             updateSaveButton();
             if (palette != null && palette.getVibrantSwatch() != null) {
@@ -735,7 +805,7 @@ public class ImageDetailsActivity extends BaseActivity implements Handler.Callba
 
         int animationDuration = 400;
 
-        if (isInFullscreen()){
+        if (isInFullscreen()) {
             scrollView.smoothScrollTo(0, (Integer) scrollView.getTag());
             if (photoViewAttacher != null) {
                 photoViewAttacher.cleanup();
@@ -800,7 +870,6 @@ public class ImageDetailsActivity extends BaseActivity implements Handler.Callba
         }
 
 
-
         if (photoLayoutHolder.getTranslationY() != 0.0f) {
             photoLayoutHolder.animate()
                     .translationY(0.0f)
@@ -830,7 +899,9 @@ public class ImageDetailsActivity extends BaseActivity implements Handler.Callba
         });
         valueAnimator.addListener(new Animator.AnimatorListener() {
             @Override
-            public void onAnimationStart(Animator animator) {}
+            public void onAnimationStart(Animator animator) {
+            }
+
             @Override
             public void onAnimationEnd(Animator animator) {
                 if (photoViewAttacher != null) {
@@ -842,10 +913,14 @@ public class ImageDetailsActivity extends BaseActivity implements Handler.Callba
                     });
                 }
             }
+
             @Override
-            public void onAnimationCancel(Animator animator) {}
+            public void onAnimationCancel(Animator animator) {
+            }
+
             @Override
-            public void onAnimationRepeat(Animator animator) {}
+            public void onAnimationRepeat(Animator animator) {
+            }
         });
         valueAnimator.start();
 
@@ -864,7 +939,7 @@ public class ImageDetailsActivity extends BaseActivity implements Handler.Callba
         Display thisDisplay = getWindowManager().getDefaultDisplay();
         int screenHeight = thisDisplay.getHeight();
         int emptySpace = detailsViewGroup.getPaddingTop();
-        int targetHeight = emptySpace - ((screenHeight/3)*2);
+        int targetHeight = emptySpace - ((screenHeight / 3) * 2);
         int navBarHeight = 0;
         if (imageSize.getHeight() > (screenHeight - navBarHeight)) {
             Message msgObj = uiHandler.obtainMessage();
@@ -916,7 +991,7 @@ public class ImageDetailsActivity extends BaseActivity implements Handler.Callba
                     textViewSource.setText(imagePage.author().name());
                     if (imagePage.author().page() != Uri.EMPTY) {
                         textViewSource.setTextColor(getResources()
-                                        .getColor(R.color.Holo_Blue_Dark)
+                                .getColor(R.color.Holo_Blue_Dark)
                         );
                         textViewSource.setTag(imagePage.author());
                         textViewSource.setOnClickListener(new View.OnClickListener() {
