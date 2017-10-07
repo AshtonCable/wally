@@ -67,7 +67,7 @@ import static com.musenkishi.wally.observers.FiltersChangeReceiver.OnFiltersChan
 
 /**
  * ToplistFragment is responsible for showing the user the toplist of wallpapers.
- *
+ * <p>
  * Created by Freddie (Musenkishi) Lust-Hed on 2014-02-28
  */
 public class ToplistFragment extends GridFragment implements RecyclerImagesAdapter.OnSaveButtonClickedListener, Handler.Callback, OnFileChangeListener, OnFiltersChangeListener {
@@ -80,16 +80,16 @@ public class ToplistFragment extends GridFragment implements RecyclerImagesAdapt
     private static final int MSG_IMAGES_REQUEST_APPEND = 123;
     private static final int MSG_SAVE_LIST_OF_SAVED_IMAGES = 128;
     private static final int MSG_ERROR_IMAGE_SAVING = 129;
-     private static final int MSG_SAVE_BUTTON_CLICKED = 130;
-     private static final int MSG_PAGE_RECEIVED = 131;
-     private static final String STATE_IMAGES = TAG + ".Images";
-     private static final String STATE_CURRENT_PAGE = TAG + ".Current.Page";
+    private static final int MSG_SAVE_BUTTON_CLICKED = 130;
+    private static final int MSG_PAGE_RECEIVED = 131;
+    private static final String STATE_IMAGES = TAG + ".Images";
+    private static final String STATE_CURRENT_PAGE = TAG + ".Current.Page";
 
-     private boolean isLoading;
-     private Handler backgroundHandler;
-     private Handler uiHandler;
-     private HashMap<String, Boolean> savedFiles;
-     private int currentPage = 1;
+    private boolean isLoading;
+    private Handler backgroundHandler;
+    private Handler uiHandler;
+    private HashMap<String, Boolean> savedFiles;
+    private int currentPage = 1;
 
      /**
      * Returns a new instance of this fragment for the given section
@@ -120,7 +120,7 @@ public class ToplistFragment extends GridFragment implements RecyclerImagesAdapt
         if (rootView != null) {
             super.onCreateView(rootView);
             setupAutoSizeGridView();
-            if (savedInstanceState != null && savedInstanceState.containsKey(STATE_IMAGES)){
+            if (savedInstanceState != null && savedInstanceState.containsKey(STATE_IMAGES)) {
                 Message msgObj = uiHandler.obtainMessage();
                 msgObj.what = MSG_IMAGES_REQUEST_CREATE;
                 msgObj.arg1 = 1;
@@ -308,7 +308,7 @@ public class ToplistFragment extends GridFragment implements RecyclerImagesAdapt
                             imagePage.imageId(),
                             getResources().getString(R.string.notification_title_image_saving));
 
-                    if (saveImageRequest.getDownloadID() != null && getActivity() instanceof MainActivity){
+                    if (saveImageRequest.getDownloadID() != null && getActivity() instanceof MainActivity) {
                         WallyApplication.getDownloadIDs().put(saveImageRequest.getDownloadID(), imagePage.imageId());
                     } else {
                         getActivity().sendBroadcast(new Intent(FileReceiver.GET_FILES));
@@ -400,19 +400,23 @@ public class ToplistFragment extends GridFragment implements RecyclerImagesAdapt
                     thumb = glideBitmapDrawable.getBitmap();
                 } else if (thumbnailImageView != null && thumbnailImageView.getDrawable() != null
                         && thumbnailImageView.getDrawable() instanceof TransitionDrawable) {
-                    GlideBitmapDrawable squaringDrawable = (GlideBitmapDrawable) ((TransitionDrawable) thumbnailImageView.getDrawable()).getDrawable(1);
-                    thumb = squaringDrawable.getBitmap();
+                    try {
+                        GlideBitmapDrawable squaringDrawable = (GlideBitmapDrawable) ((TransitionDrawable) thumbnailImageView.getDrawable()).getDrawable(1);
+                        thumb = squaringDrawable.getBitmap();
+                    } catch (ClassCastException e) {
+
+                    }
                 }
                 WallyApplication.setBitmapThumb(thumb);
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 
-                String transitionNameImage = getString(R.string.transition_image_details);
-                ActivityOptionsCompat options =
-                        ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(),
-                                Pair.create(view.findViewById(R.id.thumb_image_view), transitionNameImage)
-                        );
-                ActivityCompat.startActivityForResult(getActivity(), intent, ImageDetailsActivity.REQUEST_EXTRA_TAG, options.toBundle());
+                    String transitionNameImage = getString(R.string.transition_image_details);
+                    ActivityOptionsCompat options =
+                            ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(),
+                                    Pair.create(view.findViewById(R.id.thumb_image_view), transitionNameImage)
+                            );
+                    ActivityCompat.startActivityForResult(getActivity(), intent, ImageDetailsActivity.REQUEST_EXTRA_TAG, options.toBundle());
 
                 } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                     view.buildDrawingCache(true);
