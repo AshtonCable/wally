@@ -18,7 +18,7 @@ Features
 * Automatic Daily wallpaper change feature
 * Fast and efficient loading of images
 
-![](https://github.com/mahermalaeb/wally/blob/github_ready/assets/wallak_demo.gif)
+![](https://github.com/mahermalaeb/wally/blob/master/assets/wallak_demo.gif)
 
 Development
 -----------
