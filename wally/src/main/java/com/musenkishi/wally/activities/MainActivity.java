@@ -168,7 +168,7 @@ public class MainActivity extends BaseActivity {
                 Intent fileChangeIntent = new Intent(FileReceiver.GET_FILES);
                 fileReceiver.onReceive(context, fileChangeIntent);
             }
-            View heartTabImageView = tabBarView.getTab(4).getImageView();
+            View heartTabImageView = tabBarView.getTab(1).getImageView();
             startHeartPopoutAnimation(heartTabImageView, Color.WHITE);
         }
     }
