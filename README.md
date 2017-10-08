@@ -18,6 +18,8 @@ Features
 * Automatic Daily wallpaper change feature
 * Fast and efficient loading of images
 
+![](https://github.com/mahermalaeb/wally/blob/github_ready/assets/wallak_demo.gif)
+
 Development
 -----------
 Wally is a gradle project built with Android Studio 0.8.x. To get started, import the project in
