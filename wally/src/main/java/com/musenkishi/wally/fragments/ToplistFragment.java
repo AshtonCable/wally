@@ -176,6 +176,8 @@ public class ToplistFragment extends GridFragment implements RecyclerImagesAdapt
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        //Un-Comment the below to have the old filtering options enabled
+        /*
         inflater.inflate(R.menu.images_list, menu);
 
         MenuItem menuItemFilter = menu.findItem(R.id.action_filter);
@@ -206,6 +208,7 @@ public class ToplistFragment extends GridFragment implements RecyclerImagesAdapt
                 }
             });
         }
+        */
 
         super.onCreateOptionsMenu(menu, inflater);
     }
