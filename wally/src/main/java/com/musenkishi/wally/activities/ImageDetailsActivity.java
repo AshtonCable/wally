@@ -644,7 +644,7 @@ public class ImageDetailsActivity extends BaseActivity implements Handler.Callba
     private void writeActivatedDailyToPreferences(boolean isDailyActivated) {
         SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putBoolean(PREF_IS_DAILY_ACTIVATED, isDailyActivated);
+        editor.putBoolean(PREF_IS_DAILY_ACTIVATED, isDailyActivated).apply();
     }
 
     private boolean readActivatedDailyFromPreferences() {
@@ -676,7 +676,6 @@ public class ImageDetailsActivity extends BaseActivity implements Handler.Callba
         buttonActivateDaily.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AlarmManager alarmMgr = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
                 if (!isDailyActivated) {
                     activateDailyWallpaperAlarm();
                     isDailyActivated = true;
