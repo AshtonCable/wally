@@ -1033,6 +1033,8 @@ public class ImageDetailsActivity extends BaseActivity implements Handler.Callba
 
                             flowLayoutTags.addView(tagView);
 
+                            //Un-comment the below to make the tags clickable
+                            /*
                             tagTextView.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
@@ -1042,6 +1044,7 @@ public class ImageDetailsActivity extends BaseActivity implements Handler.Callba
                                     ImageDetailsActivity.this.finish();
                                 }
                             });
+                            */
                         }
                     } else {
                         findViewById(R.id.image_details_tags_title).setVisibility(View.GONE);
