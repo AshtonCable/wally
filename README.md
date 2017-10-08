@@ -54,9 +54,10 @@ Pull requests are welcome!
 
 Thanks
 ------
-* Musenkishi for making the app open source. He did all the work. Wallak is just a small variation
+Musenkishi for making the app open source. He did all the work. Wallak is just a small variation
 
 Author
 ------
 Freddie Lust-Hed - @musenkishi
+
 Maher Malaeb
