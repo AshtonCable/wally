@@ -1,13 +1,22 @@
-Wally
+Wallak - Build your own wallpaper app!
 =====
 
-Wally is a fast and efficient open source wallpaper application for Android.
+Wallak is an open source android app wallpaper app. What makes this app special is the fact that you
+can easily change the source of the images and provide your own wallpaper source.
 
-![](assets/wally_logo.png)
+Wallak is a fork of the open source app [Wally](https://github.com/Musenkishi/wally).
+Its name is also a variation of the original app name. In the Arabic language adding
+"ak" is like adding a possessive noun which makes Wallak mean "Your wall"!
 
-Wally gets its source of images from [Wallhaven][1]. By scraping the website, it provides the user
-with a fast and smooth experience filled with subtle animations and a minimal design. The main goal
-of Wally is to provide the same functionality as the website but in a more mobile friendly way.
+In it's current state Wally gets its source of images from a Firebase backend which I have built. I
+have gathered a nice collection of HQ photos from around my small country Lebanon.
+
+Features
+--------
+* Collection of high quality photos from Lebanon
+* Easily save, share or set photo as wallpaper
+* Automatic Daily wallpaper change feature
+* Fast and efficient loading of images
 
 Development
 -----------
@@ -18,6 +27,14 @@ However, you might notice that it won't build right away. This is because you ha
 with/generate your own release- and debug keystore. The debug keystore can be generated the same
 way as a release keystore. Put the release- and debug keystore files in a directory of your choice
 and reference them in a <code>local.properties</code> file in the root folder of this project.
+
+Changing Image source
+----------------------
+To change the image source and make Wallak read your own source you need to edit 1 Class only which
+is the "CustomDataProvider" following the below path
+`wally\dataprovider\src\main\java\com\musenkishi\wally\dataprovider\CustomDataProvider.java`
+
+Each function in this class includes comments on how it should be changed.
 
 Architecture
 ------------
@@ -35,15 +52,9 @@ Pull requests are welcome!
 
 Thanks
 ------
-* All alpha testers.
-* Everyone who has contributed ideas and reported issues!
+* Musenkishi for making the app open source. He did all the work. Wallak is just a small variation
 
 Author
 ------
 Freddie Lust-Hed - @musenkishi
-
-Disclaimer
----------
-This is not an official Wallhaven product.
-
-[1]: http://alpha.wallhaven.cc
+Maher Malaeb

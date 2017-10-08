@@ -17,7 +17,7 @@
 
 <resources>
 
-    <string name="app_name">Wally</string>
+    <string name="app_name">Wallak</string>
     <string name="title_section_toplist">Top</string>
     <string name="title_section_search">Search</string>
     <string name="title_section_random">Random</string>

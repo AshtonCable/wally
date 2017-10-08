@@ -18,6 +18,12 @@
 
 <notices>
     <notice>
+        <name>wally</name>
+        <url>https://github.com/Musenkishi/wally</url>
+        <copyright/>
+        <license>Apache Software License 2.0</license>
+    </notice>
+    <notice>
         <name>PhotoView</name>
         <url>https://github.com/chrisbanes/PhotoView</url>
         <copyright>Copyright 2011, 2012 Chris Banes</copyright>
