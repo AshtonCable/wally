@@ -29,7 +29,7 @@ class ImageCreator {
         Uri imagePath = Uri.parse(imageURL);
         Author author = Author.create(authorName, Uri.EMPTY);
         ArrayList<Tag> tags = new ArrayList<>();
-        for(String tagString: tagStrings){
+        for (String tagString : tagStrings) {
             Tag tag = Tag.create(tagString);
             tags.add(tag);
         }
@@ -38,8 +38,8 @@ class ImageCreator {
         imagesPageHashMap.put(imageURL, imagePage);
     }
 
-    private static void addImage(String imageId, String imageURL, String resolution) {
-        Image image = Image.create(imageId, imageURL,
+    private static void addImage(String imageId, String thumbURL, String imageURL, String resolution) {
+        Image image = Image.create(imageId, thumbURL,
                 imageURL, resolution);
         imageArrayList.add(image);
     }
@@ -60,13 +60,14 @@ class ImageCreator {
                 String uploadDate = (String) providerDataSnapshot.child("upload_date").getValue();
                 String uploader = (String) providerDataSnapshot.child("uploader").getValue();
                 String imageUrl = (String) providerDataSnapshot.child("url").getValue();
+                String thumbUrl = (String) providerDataSnapshot.child("thumb_url").getValue();
                 ArrayList<String> tagsString = new ArrayList<>();
                 for (DataSnapshot tagsDataSnapshot : providerDataSnapshot.child("tags").getChildren()) {
                     String tag = tagsDataSnapshot.getKey();
                     tagsString.add(tag);
                 }
-                addImage(imageId,imageUrl,resolution);
-                addPage(title,imageId,imageUrl,resolution,category,rating,uploader,uploadDate,author,tagsString);
+                addImage(imageId, thumbUrl, imageUrl, resolution);
+                addPage(title, imageId, imageUrl, resolution, category, rating, uploader, uploadDate, author, tagsString);
             }
         }
     }
