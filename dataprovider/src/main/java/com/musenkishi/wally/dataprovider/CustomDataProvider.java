@@ -7,11 +7,6 @@ import android.graphics.Bitmap;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.SimpleTarget;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.musenkishi.wally.models.ExceptionReporter;
 import com.musenkishi.wally.models.Image;
 import com.musenkishi.wally.models.ImagePage;
@@ -46,7 +41,7 @@ public class CustomDataProvider implements IDataProvider {
     @Override
     public ArrayList<Image> getImagesSync(String path, int index,
                                           FilterGroupsStructure filterGroupsStructure) {
-        return ImageCreator.getImages();
+        return NewImageSource.getImages();
     }
 
     /*
@@ -57,21 +52,11 @@ public class CustomDataProvider implements IDataProvider {
     @Override
     public void getImages(String path, int index, FilterGroupsStructure filterGroupsStructure,
                           final OnImagesReceivedListener onImagesReceivedListener) {
-        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
-        dbRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (onImagesReceivedListener != null) {
-                    ImageCreator.fillData(dataSnapshot);
-                    onImagesReceivedListener.onImagesReceived(ImageCreator.getImages());
-                }
-            }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
+        if (onImagesReceivedListener != null) {
+            NewImageSource.fillData();
+            onImagesReceivedListener.onImagesReceived(NewImageSource.getImages());
+        }
     }
 
     /*
@@ -80,7 +65,7 @@ public class CustomDataProvider implements IDataProvider {
      */
     @Override
     public ImagePage getPageDataSync(String imagePageUrl) {
-        return ImageCreator.getImagePage(imagePageUrl);
+        return NewImageSource.getImagePage(imagePageUrl);
     }
 
     /*
@@ -91,7 +76,7 @@ public class CustomDataProvider implements IDataProvider {
     @Override
     public void getPageData(String imagePageUrl, OnPageReceivedListener onPageReceivedListener) {
         if (onPageReceivedListener != null) {
-            onPageReceivedListener.onPageReceived(ImageCreator.getImagePage(imagePageUrl));
+            onPageReceivedListener.onPageReceived(NewImageSource.getImagePage(imagePageUrl));
         }
     }
 
@@ -101,21 +86,7 @@ public class CustomDataProvider implements IDataProvider {
      * provide an image URL to the function setWallpaperFromUrl(...).
      */
     public void setRandomWallpaper() {
-        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
-        dbRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                ImageCreator.fillData(dataSnapshot);
-                Image selectedImage = getRandomImage(ImageCreator.getImages());
-                String imagePageURL = selectedImage.imagePageURL();
-                setWallpaperFromUrl(imagePageURL);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
+        setWallpaperFromUrl("https://unsplash.it/1600/2400?image=20");
     }
 
     /*
