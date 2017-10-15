@@ -38,6 +38,8 @@ is the "CustomDataProvider" following the below path
 
 Each function in this class includes comments on how it should be changed.
 
+**You can check for example [new_source_tutorial](https://github.com/mahermalaeb/wally/tree/new_source_tutorial) branch where a new image source is implemented. The work done on this branch is explained in the tutorial article found [here](https://medium.com/@m_n_malaeb/wallak-build-your-own-android-wallpaper-app-c105758ba1f8).**
+
 Architecture
 ------------
 Wally is divided into multiple modules; Models, Data Provider, and the main module Wally (UI). This
